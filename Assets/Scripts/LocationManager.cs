@@ -6,12 +6,10 @@ using UnityEngine.UI;
 public class LocationManager : MonoBehaviour
 {
     [SerializeField] Text locationText;
-    bool canReadLocation;
     int delay;
 
     IEnumerator Start()
     {
-        canReadLocation = false;
         delay = 0;
         //端末で位置情報使用許可がおりていない
         if (!Input.location.isEnabledByUser)
@@ -46,7 +44,6 @@ public class LocationManager : MonoBehaviour
         //位置情報取得完了
         else
         {
-            canReadLocation = true;
             ReadLocation();
         }
         //位置情報取得終了
@@ -56,7 +53,7 @@ public class LocationManager : MonoBehaviour
      void Update()
     {
         //位置情報取得可能かの判定
-        if (canReadLocation)
+        if (Input.location.status == LocationServiceStatus.Running)
         {
             //位置情報を読み込む関数の遅延
             delay++;
