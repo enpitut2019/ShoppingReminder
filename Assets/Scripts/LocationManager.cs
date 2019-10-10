@@ -50,7 +50,7 @@ public class LocationManager : MonoBehaviour
         //Input.location.Stop();
     }
 
-     void Update()
+    void Update()
     {
         //位置情報取得可能かの判定
         if (Input.location.status == LocationServiceStatus.Running)
