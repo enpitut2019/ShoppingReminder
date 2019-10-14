@@ -6,6 +6,7 @@ using UnityEngine.UI;
 public class LocationManager : MonoBehaviour
 {
     [SerializeField] Text locationText;
+    [SerializeField] NotificationMangager notificationMangager;
     int delay;
 
     IEnumerator Start()
@@ -67,8 +68,14 @@ public class LocationManager : MonoBehaviour
 
     void ReadLocation()
     {
+        float latitude = Input.location.lastData.latitude;
+        float longitude = Input.location.lastData.longitude;
+        float tolerance = 0.001f;
         //位置情報を表示
-        locationText.text = "緯度: " + Input.location.lastData.latitude + "\n" + "経度: " + Input.location.lastData.longitude;
+        locationText.text = "緯度: " + latitude + "\n" + "経度: " + longitude;
+        if ((34.40151f - tolerance <= latitude && latitude <= 34.40151f + tolerance) && (132.713775f - tolerance <= longitude && longitude <= 132.713775f + tolerance)){
+            notificationMangager.SendNotification();
+        }
     }
 
     //アプリが終了したときに呼び出される

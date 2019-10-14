@@ -5,9 +5,11 @@ using UnityEngine;
 public class NotificationMangager : MonoBehaviour
 {
     private string m_channelId = "【ここにチャンネル ID】";
+    int identifier;
 
     private void Awake()
     {
+        identifier = -1;
         // 通知用のチャンネルを作成する
         var c = new AndroidNotificationChannel
         {
@@ -20,7 +22,7 @@ public class NotificationMangager : MonoBehaviour
     }
 
     // ボタンが押されたら呼び出される関数
-    public void OnClickButton()
+    public void SendNotification()
     {
         // 通知を送信する
         var n = new AndroidNotification
@@ -29,8 +31,13 @@ public class NotificationMangager : MonoBehaviour
             Text = "【ここにテキスト】",
             SmallIcon = "icon_0",
             LargeIcon = "icon_1",
-            FireTime = DateTime.Now.AddSeconds(10), // 10 秒後に通知
+            FireTime = DateTime.Now.AddSeconds(1), // 1 秒後に通知
         };
-        AndroidNotificationCenter.SendNotification(n, m_channelId);
+
+        //通知IDが初期値のときだけ通知を送る
+        if (AndroidNotificationCenter.CheckScheduledNotificationStatus(identifier) == NotificationStatus.Unknown)
+        {
+            identifier = AndroidNotificationCenter.SendNotification(n, m_channelId);
+        }
     }
 }
