@@ -43,7 +43,7 @@ public class MainActivity extends AppCompatActivity {
             checkPermission();
         }
         else{
-            startLocationService();
+            startLocationActivity();
         }
 
     }
@@ -55,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED){
 
-            startLocationService();
+            startLocationActivity();
         }
         // 拒否していた場合
         else{
@@ -78,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_PERMISSION) {
             // 使用が許可された
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startLocationService();
+                startLocationActivity();
 
             } else {
                 // それでも拒否された時の対応
@@ -88,47 +88,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void startLocationService() {
-        setContentView(R.layout.activity_main);
-
-        //textView = findViewById(R.id.log_text);
-
-        Button buttonStart = findViewById(R.id.button_start);
-        buttonStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //Intent intent = new Intent(getApplication(), LocationService.class);
-
-                // API 26 以降
-                //startForegroundService(intent);
-
-                textView.setText(R.string.start);
-                // Activityを終了させる
-                finish();
-            }
-        });
-
-        Button buttonLog = findViewById(R.id.button_log);
-        buttonLog.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                //textView.setText(fileReadWrite.readFile());
-                textView.setText(R.string.log);
-            }
-        });
-
-        Button buttonReset = findViewById(R.id.button_reset);
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Serviceの停止
-                //Intent intent = new Intent(getApplication(), LocationService.class);
-                //stopService(intent);
-
-                //fileReadWrite.clearFile();
-                textView.setText(R.string.reset);
-            }
-        });
+    // Intent でLocation
+    private void startLocationActivity() {
+        Intent intent = new Intent(getApplication(), LocationActivity.class);
+        startActivity(intent);
     }
 
     //トーストの生成
