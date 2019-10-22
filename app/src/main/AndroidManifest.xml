@@ -19,7 +19,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".LocationActivity" />
+        <service android:name=".LocationService" />
     </application>
 
 </manifest>
