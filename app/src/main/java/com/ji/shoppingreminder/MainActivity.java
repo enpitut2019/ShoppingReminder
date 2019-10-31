@@ -16,6 +16,8 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private BroadcastReceiver mReceiver = null;
     private IntentFilter mIntentFilter = null;
     private TextView textView;
+    private String categoryString;
 
     private final int REQUEST_PERMISSION = 1000;
     private static final int REQUEST = 1;
@@ -49,6 +52,8 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Context context = getApplicationContext();
+
+        initSpinners();
 
         textView = findViewById(R.id.log_text);
 
@@ -103,6 +108,35 @@ public class MainActivity extends AppCompatActivity {
         } catch (GooglePlayServicesNotAvailableException e) {
         }
     }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        Button btn = (Button)findViewById(R.id.categoryDecideButton);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = (Spinner)findViewById(R.id.categorySpinner);
+                TextView textView = (TextView)findViewById(R.id.textView);
+
+                categoryString = spinner.getSelectedItem().toString();
+                textView.setText(categoryString);
+            }
+        });
+    }
+
+
+    public void initSpinners() {
+        Spinner categorySpinner = findViewById(R.id.categorySpinner);
+        String[] labels = getResources().getStringArray(R.array.category);
+        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
+        categorySpinner.setAdapter(adapter);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
 
     /**
      * 位置情報の許可を確認する
@@ -159,6 +193,7 @@ public class MainActivity extends AppCompatActivity {
     private void startLocationService() {
         setContentView(R.layout.activity_main);
         textView = findViewById(R.id.log_text);
+
 
         Button buttonStart = findViewById(R.id.button_start);
         buttonStart.setOnClickListener(new View.OnClickListener() {

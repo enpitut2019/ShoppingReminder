@@ -2,4 +2,12 @@
     <string name="app_name">ShoppingReminder</string>
     <string name="start">Start</string>
     <string name="stop">Stop</string>
+    <string name="categoryDecideButton">Button</string>
+    <string name="textview">TextView</string>
+
+    <string-array name="category">
+        <item>食料品</item>
+        <item>日用品</item>
+        <item>衣料品</item>
+    </string-array>
 </resources>
