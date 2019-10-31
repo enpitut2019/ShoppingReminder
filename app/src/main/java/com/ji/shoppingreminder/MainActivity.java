@@ -6,6 +6,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -18,8 +19,14 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
+import android.location.Location;
 import android.util.Log;
 
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.location.places.Place;
+import com.google.android.gms.location.places.Places;
+import com.google.android.gms.location.places.ui.PlacePicker;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -30,6 +37,7 @@ public class MainActivity extends AppCompatActivity {
     private TextView textView;
 
     private final int REQUEST_PERMISSION = 1000;
+    private static final int REQUEST = 1;
 
     /**
      * APIの確認とレシーバーの作成
@@ -68,6 +76,32 @@ public class MainActivity extends AppCompatActivity {
         mIntentFilter.addAction("LocationService");
         registerReceiver(mReceiver, mIntentFilter);
 
+        placesAPI();
+    }
+
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+        if (requestCode == REQUEST && resultCode == Activity.RESULT_OK) {
+            Place place = PlacePicker.getPlace(this, data);
+            Log.d("test", "getLocation");
+            textView.setText(new StringBuilder().append(place.getName()).append("\n").append(place.getAddress()).toString());
+
+        } else {
+            Log.d("test", "cannotgetLocation");
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+    }
+
+    private void placesAPI(){
+        String apikey = "AIzaSyCu6MTCIQKPkkrwziJooVwSkgUoC-MNIM0";
+        //Places.initialize(getApplicationContext(), apikey);
+        try {
+            PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
+            Intent intent = intentBuilder.build(MainActivity.this);
+            startActivityForResult(intent, REQUEST);
+        } catch (GooglePlayServicesRepairableException e) {
+        } catch (GooglePlayServicesNotAvailableException e) {
+        }
     }
 
     /**
