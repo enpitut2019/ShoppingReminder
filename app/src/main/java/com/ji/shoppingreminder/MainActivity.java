@@ -29,6 +29,7 @@ import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.places.Place;
 import com.google.android.gms.location.places.Places;
 import com.google.android.gms.location.places.ui.PlacePicker;
+import com.google.android.gms.common.api.GoogleApiClient;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,6 +39,8 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter mIntentFilter = null;
     private TextView textView;
     private String categoryString;
+    private GoogleApiClient googleApiClient_;
+
 
     private final int REQUEST_PERMISSION = 1000;
     private static final int REQUEST = 1;
@@ -77,11 +80,17 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
+        googleApiClient_ = new GoogleApiClient
+                .Builder(this)
+                .addApi(Places.GEO_DATA_API)
+                .addApi(Places.PLACE_DETECTION_API)
+                .build();
+
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("LocationService");
         registerReceiver(mReceiver, mIntentFilter);
 
-        placesAPI();
+        //placesAPI();
     }
 
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -105,13 +114,17 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = intentBuilder.build(MainActivity.this);
             startActivityForResult(intent, REQUEST);
         } catch (GooglePlayServicesRepairableException e) {
+            Log.d("placeAPIDebug","GooglePlayServicesRepairableException e");
         } catch (GooglePlayServicesNotAvailableException e) {
+            Log.d("placeAPIDebug","GooglePlayServicesNotAvailableException e");
         }
     }
+
 
     @Override
     protected void onStart() {
         super.onStart();
+        googleApiClient_.connect();
 
         Button btn = (Button)findViewById(R.id.categoryDecideButton);
 
