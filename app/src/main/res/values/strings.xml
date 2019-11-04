@@ -4,6 +4,7 @@
     <string name="stop">Stop</string>
     <string name="categoryDecideButton">Button</string>
     <string name="textview">TextView</string>
+    <string name="places_api_key">AIzaSyCu6MTCIQKPkkrwziJooVwSkgUoC-MNIM0</string>
 
     <string-array name="category">
         <item>食料品</item>

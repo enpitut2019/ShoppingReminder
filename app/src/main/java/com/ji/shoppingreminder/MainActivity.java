@@ -26,10 +26,20 @@ import android.util.Log;
 
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.location.places.Place;
-import com.google.android.gms.location.places.Places;
-import com.google.android.gms.location.places.ui.PlacePicker;
 import com.google.android.gms.common.api.GoogleApiClient;
+
+import com.google.android.gms.tasks.Task;
+import com.google.android.libraries.places.api.Places;
+import com.google.android.libraries.places.api.model.Place;
+import com.google.android.libraries.places.api.model.Place.Field;
+import com.google.android.libraries.places.api.model.PlaceLikelihood;
+import com.google.android.libraries.places.api.model.Place.Type;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
+import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
+import com.google.android.libraries.places.api.net.PlacesClient;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -39,7 +49,7 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter mIntentFilter = null;
     private TextView textView;
     private String categoryString;
-    private GoogleApiClient googleApiClient_;
+    private PlacesClient placesClient;
 
 
     private final int REQUEST_PERMISSION = 1000;
@@ -80,51 +90,57 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        googleApiClient_ = new GoogleApiClient
-                .Builder(this)
-                .addApi(Places.GEO_DATA_API)
-                .addApi(Places.PLACE_DETECTION_API)
-                .build();
-
         mIntentFilter = new IntentFilter();
         mIntentFilter.addAction("LocationService");
         registerReceiver(mReceiver, mIntentFilter);
 
-        //placesAPI();
-    }
-
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-        if (requestCode == REQUEST && resultCode == Activity.RESULT_OK) {
-            Place place = PlacePicker.getPlace(this, data);
-            Log.d("test", "getLocation");
-            textView.setText(new StringBuilder().append(place.getName()).append("\n").append(place.getAddress()).toString());
-
-        } else {
-            Log.d("test", "cannotgetLocation");
-            super.onActivityResult(requestCode, resultCode, data);
-        }
+        placesAPI();
     }
 
     private void placesAPI(){
-        String apikey = "AIzaSyCu6MTCIQKPkkrwziJooVwSkgUoC-MNIM0";
-        //Places.initialize(getApplicationContext(), apikey);
-        try {
-            PlacePicker.IntentBuilder intentBuilder = new PlacePicker.IntentBuilder();
-            Intent intent = intentBuilder.build(MainActivity.this);
-            startActivityForResult(intent, REQUEST);
-        } catch (GooglePlayServicesRepairableException e) {
-            Log.d("placeAPIDebug","GooglePlayServicesRepairableException e");
-        } catch (GooglePlayServicesNotAvailableException e) {
-            Log.d("placeAPIDebug","GooglePlayServicesNotAvailableException e");
+        if (!Places.isInitialized()) {
+            String gApiKey = this.getString(R.string.places_api_key);
+            Places.initialize(this, gApiKey);
         }
-    }
+        // Retrieve a PlacesClient
+        placesClient = Places.createClient(this);
 
+        List<Place.Field> fields = new ArrayList<>();
+        fields.add(Place.Field.NAME);
+        fields.add(Field.TYPES);
+
+        FindCurrentPlaceRequest currentPlaceRequest =
+                FindCurrentPlaceRequest.newInstance(fields);
+        Task<FindCurrentPlaceResponse> currentPlaceTask =
+                placesClient.findCurrentPlace(currentPlaceRequest);
+
+        currentPlaceTask.addOnSuccessListener(
+                (response) -> {
+                    int size = response.getPlaceLikelihoods().size();
+                    StringBuilder strBuf = new StringBuilder();
+                    strBuf.append("----------\n");
+                    for(int i = 0; i < size; i++){
+                        String pname = response.getPlaceLikelihoods().get(i).getPlace().getName();
+                        Log.d("test", pname);
+                        strBuf.append(pname + "\n");
+                        List<Type> type = response.getPlaceLikelihoods().get(i).getPlace().getTypes();
+                        for(int j = 0; j < type.size(); j++){
+                            strBuf.append(type.get(j).toString() + ", ");
+                        }
+                        strBuf.append("\n");
+                    }
+                    textView.setText(strBuf.toString());
+                })
+                .addOnFailureListener(
+                        (exception) -> {
+                            exception.printStackTrace();
+                            textView.setText("failed");
+                        });
+    }
 
     @Override
     protected void onStart() {
         super.onStart();
-        googleApiClient_.connect();
 
         Button btn = (Button)findViewById(R.id.categoryDecideButton);
 
