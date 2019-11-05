@@ -6,8 +6,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
 import android.content.BroadcastReceiver;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -21,25 +21,22 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
-import android.location.Location;
 import android.util.Log;
-
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import com.google.android.gms.tasks.Task;
 import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.Place.Field;
-import com.google.android.libraries.places.api.model.PlaceLikelihood;
 import com.google.android.libraries.places.api.model.Place.Type;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
+import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -51,9 +48,11 @@ public class MainActivity extends AppCompatActivity {
     private String categoryString;
     private PlacesClient placesClient;
 
-
     private final int REQUEST_PERMISSION = 1000;
     private static final int REQUEST = 1;
+
+    private RequisiteDataBaseBuilder requisiteDBBuilder;
+    private SQLiteDatabase db;
 
     /**
      * APIの確認とレシーバーの作成
@@ -95,6 +94,7 @@ public class MainActivity extends AppCompatActivity {
         registerReceiver(mReceiver, mIntentFilter);
 
         placesAPI();
+        InitializeDB();
     }
 
     private void placesAPI(){
@@ -136,6 +136,62 @@ public class MainActivity extends AppCompatActivity {
                             exception.printStackTrace();
                             textView.setText("failed");
                         });
+    }
+
+    private void InitializeDB(){
+        if(requisiteDBBuilder == null){
+            requisiteDBBuilder = new RequisiteDataBaseBuilder(getApplicationContext());
+        }
+        if(db == null){
+            db = requisiteDBBuilder.getWritableDatabase();
+        }
+
+        ContentValues values = new ContentValues();
+
+        values.put("title", "potate");
+        values.put("subtitle", "food");
+
+        db.insert("requisitedb", null, values);
+
+    }
+
+    private void readData(){
+        if(requisiteDBBuilder == null){
+            requisiteDBBuilder = new RequisiteDataBaseBuilder(getApplicationContext());
+        }
+
+        if(db == null){
+            db = requisiteDBBuilder.getReadableDatabase();
+        }
+        Log.d("debug","**********Cursor");
+
+        Cursor cursor = db.query(
+                "requisitedb",
+                new String[] { "title", "subtitle" },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+
+        StringBuilder sbuilder = new StringBuilder();
+
+        for (int i = 0; i < cursor.getCount(); i++) {
+            sbuilder.append(cursor.getString(0));
+            sbuilder.append(": ");
+            sbuilder.append(cursor.getInt(1));
+            sbuilder.append("\n");
+            cursor.moveToNext();
+        }
+
+        // 忘れずに！
+        cursor.close();
+
+        Log.d("debug","**********"+sbuilder.toString());
+        textView.setText(sbuilder.toString());
     }
 
     @Override
@@ -231,10 +287,10 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplication(), LocationService.class);
 
                 // API 26 以降
-                startForegroundService(intent);
+                //startForegroundService(intent);
 
-                textView.setText(R.string.start);
-
+                //textView.setText(R.string.start);
+                readData();
                 // MainActivityを終了させる
                 //finish();
             }
