@@ -1,5 +1,7 @@
 package com.ji.shoppingreminder;
 
+import com.ji.shoppingreminder.database.*;
+
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;

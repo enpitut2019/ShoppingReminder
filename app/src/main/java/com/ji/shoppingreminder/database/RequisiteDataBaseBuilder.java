@@ -25,7 +25,7 @@ public class RequisiteDataBaseBuilder extends SQLiteOpenHelper {
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;
 
-    RequisiteDataBaseBuilder(Context context) {
+    public RequisiteDataBaseBuilder(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
     }
 
