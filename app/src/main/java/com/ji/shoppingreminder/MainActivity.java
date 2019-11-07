@@ -30,6 +30,7 @@ import com.google.android.libraries.places.api.Places;
 import com.google.android.libraries.places.api.model.Place;
 import com.google.android.libraries.places.api.model.Place.Field;
 import com.google.android.libraries.places.api.model.Place.Type;
+import com.google.android.libraries.places.api.model.*;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
 
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
+    private StoreDataBaseBuilder storeDataBaseBuilder;
+    private SQLiteDatabase storeDB;
 
     /**
      * APIの確認とレシーバーの作成
@@ -104,11 +107,21 @@ public class MainActivity extends AppCompatActivity {
             String gApiKey = this.getString(R.string.places_api_key);
             Places.initialize(this, gApiKey);
         }
+        //データベースの初期化
+        if(storeDataBaseBuilder == null){
+            storeDataBaseBuilder = new StoreDataBaseBuilder(getApplicationContext());
+        }
+        if(storeDB == null){
+            storeDB = storeDataBaseBuilder.getWritableDatabase();
+        }
+
+        storeDataBaseBuilder.onUpgrade(storeDB, 1, 2);
         // Retrieve a PlacesClient
         placesClient = Places.createClient(this);
 
         List<Place.Field> fields = new ArrayList<>();
         fields.add(Place.Field.NAME);
+        fields.add(Place.Field.LAT_LNG);
         fields.add(Field.TYPES);
 
         FindCurrentPlaceRequest currentPlaceRequest =
@@ -119,19 +132,24 @@ public class MainActivity extends AppCompatActivity {
         currentPlaceTask.addOnSuccessListener(
                 (response) -> {
                     int size = response.getPlaceLikelihoods().size();
-                    StringBuilder strBuf = new StringBuilder();
-                    strBuf.append("----------\n");
                     for(int i = 0; i < size; i++){
+                        ContentValues values = new ContentValues();
                         String pname = response.getPlaceLikelihoods().get(i).getPlace().getName();
-                        Log.d("test", pname);
-                        strBuf.append(pname + "\n");
-                        List<Type> type = response.getPlaceLikelihoods().get(i).getPlace().getTypes();
-                        for(int j = 0; j < type.size(); j++){
-                            strBuf.append(type.get(j).toString() + ", ");
-                        }
-                        strBuf.append("\n");
+                        values.put("storeName", pname);
+                        double latitude = response.getPlaceLikelihoods().get(i).getPlace().getLatLng().latitude;
+                        double longitude = response.getPlaceLikelihoods().get(i).getPlace().getLatLng().longitude;
+                        values.put("latitude", String.valueOf(latitude));
+                        values.put("longitude", String.valueOf(longitude));
+                        String type = response.getPlaceLikelihoods().get(i).getPlace().getTypes().toString();
+                        //最初と最後の文字を削除する
+                        StringBuilder strBuf = new StringBuilder();
+                        strBuf.append(type);
+                        strBuf.deleteCharAt(0);
+                        strBuf.setLength(strBuf.length() - 1);
+                        values.put("category", strBuf.toString());
+
+                        textView.setText(strBuf.toString());
                     }
-                    textView.setText(strBuf.toString());
                 })
                 .addOnFailureListener(
                         (exception) -> {
@@ -157,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void readData(){
+    private void readRequisiteData(){
         if(requisiteDBBuilder == null){
             requisiteDBBuilder = new RequisiteDataBaseBuilder(getApplicationContext());
         }
@@ -185,6 +203,49 @@ public class MainActivity extends AppCompatActivity {
             sbuilder.append(cursor.getString(0));
             sbuilder.append(": ");
             sbuilder.append(cursor.getInt(1));
+            sbuilder.append("\n");
+            cursor.moveToNext();
+        }
+
+        // 忘れずに！
+        cursor.close();
+
+        Log.d("debug","**********"+sbuilder.toString());
+        textView.setText(sbuilder.toString());
+    }
+
+    private void readStoreData(){
+        if(storeDataBaseBuilder == null){
+            storeDataBaseBuilder = new StoreDataBaseBuilder(getApplicationContext());
+        }
+
+        if(storeDB == null){
+            storeDB = storeDataBaseBuilder.getReadableDatabase();
+        }
+
+        Log.d("debug","**********Cursor");
+        Cursor cursor = storeDB.query(
+                "storedb",
+                new String[] {"storeName", "latitude", "longitude", "category"},
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+
+        StringBuilder sbuilder = new StringBuilder();
+
+        for (int i = 0; i < cursor.getCount(); i++) {
+            sbuilder.append(cursor.getString(0));
+            sbuilder.append(": ");
+            sbuilder.append(cursor.getString(1));
+            sbuilder.append(": ");
+            sbuilder.append(cursor.getString(2));
+            sbuilder.append(": ");
+            sbuilder.append(cursor.getString(3));
             sbuilder.append("\n");
             cursor.moveToNext();
         }
@@ -292,7 +353,8 @@ public class MainActivity extends AppCompatActivity {
                 //startForegroundService(intent);
 
                 //textView.setText(R.string.start);
-                readData();
+                //readRequisiteData();
+                readStoreData();
                 // MainActivityを終了させる
                 //finish();
             }
