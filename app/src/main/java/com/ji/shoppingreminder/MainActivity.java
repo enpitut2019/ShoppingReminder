@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
 
         placesAPI();
         InitializeDB();
+        //requisiteDBBuilder.onUpgrade(db,0,0);
     }
 
     private void placesAPI(){
@@ -150,11 +151,6 @@ public class MainActivity extends AppCompatActivity {
 
         ContentValues values = new ContentValues();
 
-        values.put("title", "potate");
-        values.put("subtitle", "food");
-
-        db.insert("requisitedb", null, values);
-
     }
 
     private void readData(){
@@ -169,7 +165,7 @@ public class MainActivity extends AppCompatActivity {
 
         Cursor cursor = db.query(
                 "requisitedb",
-                new String[] { "title", "subtitle" },
+                new String[] { "name", "category" },
                 null,
                 null,
                 null,
@@ -184,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         for (int i = 0; i < cursor.getCount(); i++) {
             sbuilder.append(cursor.getString(0));
             sbuilder.append(": ");
-            sbuilder.append(cursor.getInt(1));
+            sbuilder.append(cursor.getString(1));
             sbuilder.append("\n");
             cursor.moveToNext();
         }
@@ -210,6 +206,14 @@ public class MainActivity extends AppCompatActivity {
 
                 categoryString = spinner.getSelectedItem().toString();
                 textView.setText(categoryString);
+
+                //databaseに値を入れる
+                ContentValues values = new ContentValues();
+
+                values.put("name", "test");
+                values.put("category", categoryString);
+
+                db.insert("requisitedb", null, values);
             }
         });
     }

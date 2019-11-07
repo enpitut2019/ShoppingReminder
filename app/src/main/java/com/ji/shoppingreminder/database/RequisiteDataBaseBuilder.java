@@ -13,8 +13,8 @@ public class RequisiteDataBaseBuilder extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "RequisiteDB.db";
     private static final String TABLE_NAME = "requisitedb";
     private static final String _ID = "_id";
-    private static final String COLUMN_NAME_TITLE = "title";
-    private static final String COLUMN_NAME_SUBTITLE = "subtitle";
+    private static final String COLUMN_NAME_TITLE = "name";
+    private static final String COLUMN_NAME_SUBTITLE = "category";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
