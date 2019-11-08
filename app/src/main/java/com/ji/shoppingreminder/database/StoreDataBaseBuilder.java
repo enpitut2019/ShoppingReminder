@@ -21,7 +21,7 @@ public class StoreDataBaseBuilder extends SQLiteOpenHelper {
                     STORE_NAME + " TEXT," +
                     LATITUDE + " TEXT," +
                     LONGITUDE + " TEXT,"+
-                    CATEGORY + "TEXT)";
+                    CATEGORY + " TEXT)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;

@@ -35,6 +35,7 @@ public class LocationService extends Service implements LocationListener{
     private NotificationManager notificationManager;
 
     Intent intent;
+    PlacesAPI placesAPI;
 
     @Override
     public void onCreate(){
@@ -44,6 +45,9 @@ public class LocationService extends Service implements LocationListener{
 
         // LocationManager インスタンス生成
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        placesAPI = new PlacesAPI(context, String.valueOf(R.string.places_api_key));
+        placesAPI.InitializeStoreDB();
     }
 
     /**
@@ -187,11 +191,11 @@ public class LocationService extends Service implements LocationListener{
 
         float tolerance = 0.001f;
 
-        if ((34.40151f - tolerance <= latitude && latitude <= 34.40151f + tolerance) && (132.713775f - tolerance <= longitude && longitude <= 132.713775f + tolerance)){
-            //通知
-            sendNotification();
-        }
-
+//        if ((34.40151f - tolerance <= latitude && latitude <= 34.40151f + tolerance) && (132.713775f - tolerance <= longitude && longitude <= 132.713775f + tolerance)){
+//            //通知
+//            sendNotification();
+//        }
+        placesAPI.GetLocationInfo();
     }
 
     /**

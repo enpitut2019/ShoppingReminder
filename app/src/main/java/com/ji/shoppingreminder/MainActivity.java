@@ -70,8 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
         Context context = getApplicationContext();
 
-        initSpinners();
-
         textView = findViewById(R.id.log_text);
 
         // Android 6, API 23以上でパーミッシンの確認
@@ -98,67 +96,54 @@ public class MainActivity extends AppCompatActivity {
         mIntentFilter.addAction("LocationService");
         registerReceiver(mReceiver, mIntentFilter);
 
-        placesAPI();
+        InitSpinners();
         InitializeDB();
         //requisiteDBBuilder.onUpgrade(db,0,0);
+
     }
 
-    private void placesAPI(){
-        if (!Places.isInitialized()) {
-            String gApiKey = this.getString(R.string.places_api_key);
-            Places.initialize(this, gApiKey);
-        }
-        //データベースの初期化
-        if(storeDataBaseBuilder == null){
-            storeDataBaseBuilder = new StoreDataBaseBuilder(getApplicationContext());
-        }
-        if(storeDB == null){
-            storeDB = storeDataBaseBuilder.getWritableDatabase();
-        }
+    @Override
+    protected void onStart() {
+        super.onStart();
 
-        storeDataBaseBuilder.onUpgrade(storeDB, 1, 2);
-        // Retrieve a PlacesClient
-        placesClient = Places.createClient(this);
+        Button btn = (Button)findViewById(R.id.categoryDecideButton);
+        //カテゴリ決定ボタンを押したときの処理
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = (Spinner)findViewById(R.id.categorySpinner);
+                TextView textView = (TextView)findViewById(R.id.textView);
 
-        List<Place.Field> fields = new ArrayList<>();
-        fields.add(Place.Field.NAME);
-        fields.add(Place.Field.LAT_LNG);
-        fields.add(Field.TYPES);
+                categoryString = spinner.getSelectedItem().toString();
+                //textView.setText(categoryString);
+                readStoreData();
 
-        FindCurrentPlaceRequest currentPlaceRequest =
-                FindCurrentPlaceRequest.newInstance(fields);
-        Task<FindCurrentPlaceResponse> currentPlaceTask =
-                placesClient.findCurrentPlace(currentPlaceRequest);
+                //databaseに値を入れる
+                ContentValues values = new ContentValues();
 
-        currentPlaceTask.addOnSuccessListener(
-                (response) -> {
-                    int size = response.getPlaceLikelihoods().size();
-                    for(int i = 0; i < size; i++){
-                        ContentValues values = new ContentValues();
-                        String pname = response.getPlaceLikelihoods().get(i).getPlace().getName();
-                        values.put("storeName", pname);
-                        double latitude = response.getPlaceLikelihoods().get(i).getPlace().getLatLng().latitude;
-                        double longitude = response.getPlaceLikelihoods().get(i).getPlace().getLatLng().longitude;
-                        values.put("latitude", String.valueOf(latitude));
-                        values.put("longitude", String.valueOf(longitude));
-                        String type = response.getPlaceLikelihoods().get(i).getPlace().getTypes().toString();
-                        //最初と最後の文字を削除する
-                        StringBuilder strBuf = new StringBuilder();
-                        strBuf.append(type);
-                        strBuf.deleteCharAt(0);
-                        strBuf.setLength(strBuf.length() - 1);
-                        values.put("category", strBuf.toString());
+                values.put("name", "test");
+                values.put("category", categoryString);
 
-                        textView.setText(strBuf.toString());
-                    }
-                })
-                .addOnFailureListener(
-                        (exception) -> {
-                            exception.printStackTrace();
-                            textView.setText("failed");
-                        });
+                db.insert("requisitedb", null, values);
+            }
+        });
     }
 
+    /**
+     * カテゴリ選択のSpinnerの初期化
+     */
+    public void InitSpinners() {
+        Spinner categorySpinner = findViewById(R.id.categorySpinner);
+        String[] labels = getResources().getStringArray(R.array.category);
+        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
+        categorySpinner.setAdapter(adapter);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
+
+    /**
+     * RequisiteDataBaseの初期化
+     */
     private void InitializeDB(){
         if(requisiteDBBuilder == null){
             requisiteDBBuilder = new RequisiteDataBaseBuilder(getApplicationContext());
@@ -171,6 +156,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * RequisiteDataBaseのデータを表示する
+     */
     private void readRequisiteData(){
         if(requisiteDBBuilder == null){
             requisiteDBBuilder = new RequisiteDataBaseBuilder(getApplicationContext());
@@ -210,6 +198,9 @@ public class MainActivity extends AppCompatActivity {
         textView.setText(sbuilder.toString());
     }
 
+    /**
+     * StoreDataBaseのデータを表示する
+     */
     private void readStoreData(){
         if(storeDataBaseBuilder == null){
             storeDataBaseBuilder = new StoreDataBaseBuilder(getApplicationContext());
@@ -252,43 +243,6 @@ public class MainActivity extends AppCompatActivity {
         Log.d("debug","**********"+sbuilder.toString());
         textView.setText(sbuilder.toString());
     }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        Button btn = (Button)findViewById(R.id.categoryDecideButton);
-
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Spinner spinner = (Spinner)findViewById(R.id.categorySpinner);
-                TextView textView = (TextView)findViewById(R.id.textView);
-
-                categoryString = spinner.getSelectedItem().toString();
-                textView.setText(categoryString);
-
-                //databaseに値を入れる
-                ContentValues values = new ContentValues();
-
-                values.put("name", "test");
-                values.put("category", categoryString);
-
-                db.insert("requisitedb", null, values);
-            }
-        });
-    }
-
-
-    public void initSpinners() {
-        Spinner categorySpinner = findViewById(R.id.categorySpinner);
-        String[] labels = getResources().getStringArray(R.array.category);
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
-        categorySpinner.setAdapter(adapter);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    }
-
 
     /**
      * 位置情報の許可を確認する
@@ -354,11 +308,11 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(getApplication(), LocationService.class);
 
                 // API 26 以降
-                //startForegroundService(intent);
+                startForegroundService(intent);
 
                 //textView.setText(R.string.start);
                 //readRequisiteData();
-                readStoreData();
+                //readStoreData();
                 // MainActivityを終了させる
                 //finish();
             }
