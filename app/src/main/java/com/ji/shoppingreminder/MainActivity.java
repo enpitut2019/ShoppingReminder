@@ -25,15 +25,6 @@ import android.widget.Button;
 import android.widget.Toast;
 import android.util.Log;
 
-import com.google.android.gms.tasks.Task;
-import com.google.android.libraries.places.api.Places;
-import com.google.android.libraries.places.api.model.Place;
-import com.google.android.libraries.places.api.model.Place.Field;
-import com.google.android.libraries.places.api.model.Place.Type;
-import com.google.android.libraries.places.api.model.*;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
-import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
-import com.google.android.libraries.places.api.net.PlacesClient;
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 
 import java.util.ArrayList;
@@ -49,7 +40,6 @@ public class MainActivity extends AppCompatActivity {
     private IntentFilter mIntentFilter = null;
     private TextView textView;
     private String categoryString;
-    private PlacesClient placesClient;
 
     private final int REQUEST_PERMISSION = 1000;
     private static final int REQUEST = 1;

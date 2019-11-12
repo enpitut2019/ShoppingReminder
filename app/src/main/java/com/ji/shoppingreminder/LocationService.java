@@ -214,7 +214,7 @@ public class LocationService extends Service implements LocationListener{
     /**
      * PUSH通知を送信する
      */
-    private void sendNotification(){
+    public void sendNotification(String message){
         Log.d("test", "notification");
         String channelId = "default";
         String title = context.getString(R.string.app_name);
@@ -231,7 +231,7 @@ public class LocationService extends Service implements LocationListener{
                     .setContentTitle(title)
                     // アイコン設定
                     .setSmallIcon(R.drawable.ic_stat_name)
-                    .setContentText("目的地到着")
+                    .setContentText(message)
                     .setAutoCancel(true)
                     //通知をタップしたときに開くアクティビティー
                     .setContentIntent(pendingIntent)

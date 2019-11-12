@@ -2,7 +2,9 @@ package com.ji.shoppingreminder;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
@@ -12,6 +14,7 @@ import com.google.android.libraries.places.api.net.FindCurrentPlaceRequest;
 import com.google.android.libraries.places.api.net.FindCurrentPlaceResponse;
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.ji.shoppingreminder.database.CategoryLists;
+import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 import com.ji.shoppingreminder.database.StoreDataBaseBuilder;
 
 import java.util.ArrayList;
@@ -22,6 +25,8 @@ public class PlacesAPI {
     private PlacesClient placesClient;
     private StoreDataBaseBuilder storeDataBaseBuilder;
     private SQLiteDatabase storeDB;
+    private RequisiteDataBaseBuilder requisiteDataBaseBuilder;
+    private SQLiteDatabase requisiteDB;
     private Context serviceContext;
     public Context activetyContext;
     private String gApiKey;
@@ -35,11 +40,19 @@ public class PlacesAPI {
      * ストアデータベースの初期化
      */
     public void InitializeStoreDB(){
+        //施設の情報を格納するデータベースの初期化
         if(storeDataBaseBuilder == null){
             storeDataBaseBuilder = new StoreDataBaseBuilder(serviceContext);
         }
         if(storeDB == null){
             storeDB = storeDataBaseBuilder.getWritableDatabase();
+        }
+        //買いたい物の情報を格納するデータベースの初期化
+        if(requisiteDataBaseBuilder == null){
+            requisiteDataBaseBuilder = new RequisiteDataBaseBuilder(serviceContext);
+        }
+        if(requisiteDB == null){
+            requisiteDB = requisiteDataBaseBuilder.getReadableDatabase();
         }
     }
 
@@ -69,6 +82,7 @@ public class PlacesAPI {
                     //以前のデータを全削除
                     storeDB.delete("storedb", null, null);
                     int size = response.getPlaceLikelihoods().size();
+                    LocationService locationService = new LocationService();
                     Log.d("test", "start");
                     for(int i = 0; i < size; i++){
                         String pname = response.getPlaceLikelihoods().get(i).getPlace().getName();
@@ -82,12 +96,17 @@ public class PlacesAPI {
                         strBuf.deleteCharAt(0);
                         strBuf.setLength(strBuf.length() - 1);
 
-                        Log.d("test", pname);
-                        if(CheckCategories(strBuf.toString())){
+                        List<String> requisites = CheckCategories(strBuf.toString());
+                        if(requisites.size() != 0){
                             Log.d("test", "write");
-                            WriteToDatabase(pname, latitude, longitude, strBuf.toString());
+                            //WriteToDatabase(pname, latitude, longitude, strBuf.toString());
+                            //sendNotification(List<買いたい物>, List<買える施設>);
+                            //じゃがいも、たまねぎ→ショージ
+                            //トイレットペーパー→コスモス、ショージ
+                            locationService.sendNotification(pname + "で" + requisites.toString() + "が購入できます");
                         }
                     }
+
                 })
                 .addOnFailureListener(
                         (exception) -> {
@@ -101,18 +120,66 @@ public class PlacesAPI {
      * @param categories 施設のカテゴリ
      * @return 施設の情報をデータベースに保存するかどうか
      */
-    private boolean CheckCategories(String categories){
-        String[] category = categories.split(", ", -1);
+    private List<String> CheckCategories(String categories){
+        Cursor cursor = requisiteDB.query(
+                "requisitedb",
+                new String[] { "name", "category" },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
         CategoryLists categoryLists = new CategoryLists();
-        for(int i = 0; i < category.length; i++){
-            //groceryが買えるかどうかを判定
-            for(String storeCategory: categoryLists.groceryStore){
-                if(category[i].equals(storeCategory)){
-                    return true;
-                }
+        List<String> requisites = new ArrayList<String>();
+        for (int i = 0; i < cursor.getCount(); i++) {
+            //買いたい物のカテゴリ
+            String requisiteCategory = cursor.getString(2);
+            switch(requisiteCategory){
+                case "foodStore":
+                    for(String storeCategory: categoryLists.foodStore){
+                        String[] category = categories.split(", ", -1);
+                        for(int j = 0; j < category.length; j++){
+                            //買いたい物が買えるか判定
+                            if(category[i].equals(storeCategory)){
+                                requisites.add(cursor.getString(1));
+                            }
+                        }
+                    }
+                    break;
+                case "groceryStore":
+                    for(String storeCategory: categoryLists.groceryStore){
+                        String[] category = categories.split(", ", -1);
+                        for(int j = 0; j < category.length; j++){
+                            //買いたい物が買えるか判定
+                            if(category[i].equals(storeCategory)){
+                                requisites.add(cursor.getString(1));
+                            }
+                        }
+                    }
+                    break;
+                case "clothingStore":
+                    for(String storeCategory: categoryLists.clothingStore){
+                        String[] category = categories.split(", ", -1);
+                        for(int j = 0; j < category.length; j++){
+                            //買いたい物が買えるか判定
+                            if(category[i].equals(storeCategory)){
+                                requisites.add(cursor.getString(1));
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
             }
+            cursor.moveToNext();
         }
-        return false;
+
+        // 忘れずに！
+        cursor.close();
+        return requisites;
     }
 
     /**
@@ -131,5 +198,28 @@ public class PlacesAPI {
         values.put("category",categories);
 
         storeDB.insert("storedb", null, values);
+    }
+
+    /**
+     * RequisiteDataBaseのデータを表示する
+     */
+    private void readRequisiteData(String storeCategory){
+        Log.d("debug","**********Cursor");
+
+        Cursor cursor = requisiteDB.query(
+                "requisitedb",
+                new String[] { "name", "category" },
+                null,
+                null,
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+        CategoryLists categoryLists = new CategoryLists();
+
+        // 忘れずに！
+        cursor.close();
     }
 }
