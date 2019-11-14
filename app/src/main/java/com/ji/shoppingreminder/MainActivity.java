@@ -95,28 +95,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-        Button btn = (Button)findViewById(R.id.categoryDecideButton);
-        //カテゴリ決定ボタンを押したときの処理
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Spinner spinner = (Spinner)findViewById(R.id.categorySpinner);
-                TextView textView = (TextView)findViewById(R.id.textView);
-
-                categoryString = spinner.getSelectedItem().toString();
-                //textView.setText(categoryString);
-                readStoreData();
-
-                //databaseに値を入れる
-                ContentValues values = new ContentValues();
-
-                values.put("name", "test");
-                values.put("category", categoryString);
-
-                db.insert("requisitedb", null, values);
-            }
-        });
     }
 
     /**
@@ -150,13 +128,7 @@ public class MainActivity extends AppCompatActivity {
      * RequisiteDataBaseのデータを表示する
      */
     private void readRequisiteData(){
-        if(requisiteDBBuilder == null){
-            requisiteDBBuilder = new RequisiteDataBaseBuilder(getApplicationContext());
-        }
-
-        if(db == null){
-            db = requisiteDBBuilder.getReadableDatabase();
-        }
+        db = requisiteDBBuilder.getReadableDatabase();
         Log.d("debug","**********Cursor");
 
         Cursor cursor = db.query(
@@ -300,9 +272,8 @@ public class MainActivity extends AppCompatActivity {
                 // API 26 以降
                 startForegroundService(intent);
 
-                //textView.setText(R.string.start);
-                //readRequisiteData();
-                //readStoreData();
+                textView.setText(R.string.start);
+
                 // MainActivityを終了させる
                 //finish();
             }
@@ -317,6 +288,28 @@ public class MainActivity extends AppCompatActivity {
                 stopService(intent);
 
                 textView.setText(R.string.stop);
+            }
+        });
+
+        Button btn = (Button)findViewById(R.id.categoryDecideButton);
+        //カテゴリ決定ボタンを押したときの処理
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Spinner spinner = (Spinner)findViewById(R.id.categorySpinner);
+                TextView textView = (TextView)findViewById(R.id.textView);
+
+                categoryString = spinner.getSelectedItem().toString();
+                textView.setText(categoryString);
+
+                //databaseに値を入れる
+                ContentValues values = new ContentValues();
+
+                values.put("name", "test");
+                values.put("category", categoryString);
+
+                db.insert("requisitedb", null, values);
+                readRequisiteData();
             }
         });
     }

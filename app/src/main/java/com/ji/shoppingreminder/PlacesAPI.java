@@ -20,7 +20,7 @@ import com.ji.shoppingreminder.database.StoreDataBaseBuilder;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PlacesAPI {
+public class PlacesAPI{
 
     private PlacesClient placesClient;
     private StoreDataBaseBuilder storeDataBaseBuilder;
@@ -59,7 +59,7 @@ public class PlacesAPI {
     /**
      * GooglePlacesAPIで周辺施設の情報を取得
      */
-    public  void GetLocationInfo(){
+    public  void GetLocationInfo(Context context){
         if (!Places.isInitialized()) {
             Places.initialize(serviceContext, serviceContext.getString(R.string.places_api_key));
         }
@@ -97,13 +97,14 @@ public class PlacesAPI {
                         strBuf.setLength(strBuf.length() - 1);
 
                         List<String> requisites = CheckCategories(strBuf.toString());
+                        Log.d("test", String.valueOf(requisites.size()));
                         if(requisites.size() != 0){
                             Log.d("test", "write");
                             //WriteToDatabase(pname, latitude, longitude, strBuf.toString());
                             //sendNotification(List<買いたい物>, List<買える施設>);
                             //じゃがいも、たまねぎ→ショージ
                             //トイレットペーパー→コスモス、ショージ
-                            locationService.sendNotification(pname + "で" + requisites.toString() + "が購入できます");
+                            locationService.sendNotification(context, pname + "で" + requisites.toString() + "が購入できます");
                         }
                     }
 
@@ -130,48 +131,51 @@ public class PlacesAPI {
                 null,
                 null
         );
-
         cursor.moveToFirst();
         CategoryLists categoryLists = new CategoryLists();
         List<String> requisites = new ArrayList<String>();
         for (int i = 0; i < cursor.getCount(); i++) {
             //買いたい物のカテゴリ
-            String requisiteCategory = cursor.getString(2);
+            String requisiteCategory = cursor.getString(1);
             switch(requisiteCategory){
-                case "foodStore":
+                case "食料品":
                     for(String storeCategory: categoryLists.foodStore){
+                        Log.d("test", "food");
                         String[] category = categories.split(", ", -1);
                         for(int j = 0; j < category.length; j++){
                             //買いたい物が買えるか判定
-                            if(category[i].equals(storeCategory)){
-                                requisites.add(cursor.getString(1));
+                            if(category[j].equals(storeCategory)){
+                                requisites.add(cursor.getString(0));
                             }
                         }
                     }
                     break;
-                case "groceryStore":
+                case "日用品":
                     for(String storeCategory: categoryLists.groceryStore){
+                        Log.d("test", "grocery");
                         String[] category = categories.split(", ", -1);
                         for(int j = 0; j < category.length; j++){
                             //買いたい物が買えるか判定
-                            if(category[i].equals(storeCategory)){
-                                requisites.add(cursor.getString(1));
+                            if(category[j].equals(storeCategory)){
+                                requisites.add(cursor.getString(0));
                             }
                         }
                     }
                     break;
-                case "clothingStore":
+                case "衣料品":
+                    Log.d("test", "clothing");
                     for(String storeCategory: categoryLists.clothingStore){
                         String[] category = categories.split(", ", -1);
                         for(int j = 0; j < category.length; j++){
                             //買いたい物が買えるか判定
-                            if(category[i].equals(storeCategory)){
-                                requisites.add(cursor.getString(1));
+                            if(category[j].equals(storeCategory)){
+                                requisites.add(cursor.getString(0));
                             }
                         }
                     }
                     break;
                 default:
+                    Log.d("test", "check");
                     break;
             }
             cursor.moveToNext();

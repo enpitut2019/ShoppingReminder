@@ -32,7 +32,7 @@ public class LocationService extends Service implements LocationListener{
     private static final int MinTime = 1000;
     private static final float MinDistance = 50;
 
-    private NotificationManager notificationManager;
+    private static NotificationManager notificationManager;
 
     Intent intent;
     PlacesAPI placesAPI;
@@ -153,6 +153,7 @@ public class LocationService extends Service implements LocationListener{
      */
     @Override
     public void onLocationChanged(Location location) {
+
         StringBuilder strBuf = new StringBuilder();
 
         strBuf.append("----------\n");
@@ -189,20 +190,20 @@ public class LocationService extends Service implements LocationListener{
 
         sendMessage(strBuf.toString());
 
-        float tolerance = 0.001f;
+//        float tolerance = 0.001f;
 
 //        if ((34.40151f - tolerance <= latitude && latitude <= 34.40151f + tolerance) && (132.713775f - tolerance <= longitude && longitude <= 132.713775f + tolerance)){
 //            //通知
-//            sendNotification();
+//            sendNotification(context, "test");
 //        }
-        placesAPI.GetLocationInfo();
+        placesAPI.GetLocationInfo(context);
     }
 
     /**
      * 位置情報をMainActivityに送信する
      * @param message 位置情報
      */
-    private void sendMessage(String message) {
+    public void sendMessage(String message) {
 
         // IntentをブロードキャストすることでMainActivityへデータを送信
         Intent intent = new Intent();
@@ -214,8 +215,7 @@ public class LocationService extends Service implements LocationListener{
     /**
      * PUSH通知を送信する
      */
-    public void sendNotification(String message){
-        Log.d("test", "notification");
+    public static void sendNotification(Context context, String message){
         String channelId = "default";
         String title = context.getString(R.string.app_name);
         // Notification　Channel 設定
@@ -225,6 +225,7 @@ public class LocationService extends Service implements LocationListener{
         Intent  mainIntent= new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+        Log.d("test", "notification");
         if(notificationManager != null) {
             notificationManager.createNotificationChannel(channel);
             Notification notification = new Notification.Builder(context, channelId)
