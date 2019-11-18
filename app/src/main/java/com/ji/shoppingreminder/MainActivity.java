@@ -1,11 +1,13 @@
 package com.ji.shoppingreminder;
 
+import com.google.android.material.tabs.TabLayout;
 import com.ji.shoppingreminder.database.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.content.BroadcastReceiver;
@@ -26,6 +28,7 @@ import android.widget.Toast;
 import android.util.Log;
 
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
+import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -58,37 +61,43 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Context context = getApplicationContext();
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        viewPager.setAdapter(sectionsPagerAdapter);
+        TabLayout tabs = findViewById(R.id.tabs);
+        tabs.setupWithViewPager(viewPager);
 
-        textView = findViewById(R.id.log_text);
-
-        // Android 6, API 23以上でパーミッシンの確認
-        if(Build.VERSION.SDK_INT >= 23){
-            textView.setText("API23 over");
-            checkPermission();
-        }
-        else{
-            startLocationService();
-        }
-
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                // このonReceiveでMainServiceからのIntentを受信する。
-                Bundle bundle = intent.getExtras();
-                String message = bundle.getString("message");
-                // TextViewへ文字列をセット
-                textView.setText(message);
-            }
-        };
-
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction("LocationService");
-        registerReceiver(mReceiver, mIntentFilter);
-
-        InitSpinners();
-        InitializeDB();
-        //requisiteDBBuilder.onUpgrade(db,0,0);
+//        Context context = getApplicationContext();
+//
+//        textView = findViewById(R.id.log_text);
+//
+//        // Android 6, API 23以上でパーミッシンの確認
+//        if(Build.VERSION.SDK_INT >= 23){
+//            textView.setText("API23 over");
+//            checkPermission();
+//        }
+//        else{
+//            startLocationService();
+//        }
+//
+//        mReceiver = new BroadcastReceiver() {
+//            @Override
+//            public void onReceive(Context context, Intent intent) {
+//                // このonReceiveでMainServiceからのIntentを受信する。
+//                Bundle bundle = intent.getExtras();
+//                String message = bundle.getString("message");
+//                // TextViewへ文字列をセット
+//                textView.setText(message);
+//            }
+//        };
+//
+//        mIntentFilter = new IntentFilter();
+//        mIntentFilter.addAction("LocationService");
+//        registerReceiver(mReceiver, mIntentFilter);
+//
+//        InitSpinners();
+//        InitializeDB();
+//        //requisiteDBBuilder.onUpgrade(db,0,0);
 
     }
 

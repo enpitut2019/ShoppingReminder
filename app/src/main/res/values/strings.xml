@@ -11,4 +11,7 @@
         <item>日用品</item>
         <item>衣料品</item>
     </string-array>
+
+    <string name="tab_text_1">Tab 1</string>
+    <string name="tab_text_2">Tab 2</string>
 </resources>
