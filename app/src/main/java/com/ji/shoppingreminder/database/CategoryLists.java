@@ -15,7 +15,7 @@ public class CategoryLists {
     public List<String> groceryStore = new ArrayList<String>(){
         {
             add("GROCERY_OR_SUPERMARKET ");
-            add("SUPREMARKET");
+            add("SUPERMARKET");
             add("PHARMACY");
             add("UNIVERSITY");
         }
