@@ -23,8 +23,6 @@ import java.util.List;
 public class PlacesAPI{
 
     private PlacesClient placesClient;
-    private StoreDataBaseBuilder storeDataBaseBuilder;
-    private SQLiteDatabase storeDB;
     private RequisiteDataBaseBuilder requisiteDataBaseBuilder;
     private SQLiteDatabase requisiteDB;
     private Context serviceContext;
@@ -40,13 +38,6 @@ public class PlacesAPI{
      * ストアデータベースの初期化
      */
     public void InitializeStoreDB(){
-        //施設の情報を格納するデータベースの初期化
-        if(storeDataBaseBuilder == null){
-            storeDataBaseBuilder = new StoreDataBaseBuilder(serviceContext);
-        }
-        if(storeDB == null){
-            storeDB = storeDataBaseBuilder.getWritableDatabase();
-        }
         //買いたい物の情報を格納するデータベースの初期化
         if(requisiteDataBaseBuilder == null){
             requisiteDataBaseBuilder = new RequisiteDataBaseBuilder(serviceContext);
@@ -79,8 +70,6 @@ public class PlacesAPI{
 
         currentPlaceTask.addOnSuccessListener(
                 (response) -> {
-                    //以前のデータを全削除
-                    storeDB.delete("storedb", null, null);
                     int size = response.getPlaceLikelihoods().size();
                     LocationService locationService = new LocationService();
                     StringBuilder notificationMessage = new StringBuilder();
@@ -103,11 +92,6 @@ public class PlacesAPI{
                         //Log.d("test", String.valueOf(requisites.size()));
                         if(requisites.size() != 0){
                             Log.d("test", "write");
-                            //WriteToDatabase(pname, latitude, longitude, strBuf.toString());
-                            //sendNotification(List<買いたい物>, List<買える施設>);
-                            //じゃがいも、たまねぎ→ショージ
-                            //トイレットペーパー→コスモス、ショージ
-                            //locationService.sendNotification(context, pname + "で" + requisites.toString() + "が購入できます");
                             notificationMessage.append(pname + "で" + requisites.toString() + "が購入できます\n");
                         }
                     }
@@ -140,6 +124,7 @@ public class PlacesAPI{
         cursor.moveToFirst();
         CategoryLists categoryLists = new CategoryLists();
         List<String> requisites = new ArrayList<String>();
+        List<String> canBuyCategory = new ArrayList<String>();
         for (int i = 0; i < cursor.getCount(); i++) {
             //買いたい物のカテゴリ
             String requisiteCategory = cursor.getString(1);
@@ -151,6 +136,7 @@ public class PlacesAPI{
                             //買いたい物が買えるか判定
                             if(category[j].equals(storeCategory)){
                                 requisites.add(cursor.getString(0));
+                                canBuyCategory.add(requisiteCategory);
                             }
                         }
                     }
@@ -162,6 +148,7 @@ public class PlacesAPI{
                             //買いたい物が買えるか判定
                             if(category[j].equals(storeCategory)){
                                 requisites.add(cursor.getString(0));
+                                canBuyCategory.add(requisiteCategory);
                             }
                         }
                     }
@@ -173,6 +160,7 @@ public class PlacesAPI{
                             //買いたい物が買えるか判定
                             if(category[j].equals(storeCategory)){
                                 requisites.add(cursor.getString(0));
+                                canBuyCategory.add(requisiteCategory);
                             }
                         }
                     }
@@ -186,47 +174,7 @@ public class PlacesAPI{
 
         // 忘れずに！
         cursor.close();
-        return requisites;
-    }
-
-    /**
-     * 施設の情報をデータベースに書き込む
-     * @param pname 施設の名前
-     * @param latitude 緯度
-     * @param longitude 経度
-     * @param categories 施設のカテゴリ
-     */
-    private void WriteToDatabase(String pname, double latitude, double longitude, String categories){
-        ContentValues values = new ContentValues();
-        values.put("storeName", pname);
-        values.put("latitude", String.valueOf(latitude));
-        values.put("longitude", String.valueOf(longitude));
-
-        values.put("category",categories);
-
-        storeDB.insert("storedb", null, values);
-    }
-
-    /**
-     * RequisiteDataBaseのデータを表示する
-     */
-    private void readRequisiteData(String storeCategory){
-        Log.d("debug","**********Cursor");
-
-        Cursor cursor = requisiteDB.query(
-                "requisitedb",
-                new String[] { "name", "category" },
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        cursor.moveToFirst();
-        CategoryLists categoryLists = new CategoryLists();
-
-        // 忘れずに！
-        cursor.close();
+        //return requisites;
+        return canBuyCategory;
     }
 }
