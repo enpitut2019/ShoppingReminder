@@ -1,11 +1,14 @@
 package com.ji.shoppingreminder;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.Notification.Style;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+//import android.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -226,17 +229,22 @@ public class LocationService extends Service implements LocationListener{
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         Log.d("test", "notification");
+        Log.d("test", message);
         if(notificationManager != null) {
             notificationManager.createNotificationChannel(channel);
+            Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle()
+                    .setBigContentTitle(title)
+                    .bigText(message);
             Notification notification = new Notification.Builder(context, channelId)
-                    .setContentTitle(title)
+                    //.setContentTitle(title)
                     // アイコン設定
                     .setSmallIcon(R.drawable.ic_stat_name)
-                    .setContentText(message)
+                    //.setContentText(message)
                     .setAutoCancel(true)
                     //通知をタップしたときに開くアクティビティー
                     .setContentIntent(pendingIntent)
                     .setWhen(System.currentTimeMillis())
+                    .setStyle(bigTextStyle)
                     .build();
             notificationManager.notify(100, notification);
         }

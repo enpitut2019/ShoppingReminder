@@ -83,6 +83,7 @@ public class PlacesAPI{
                     storeDB.delete("storedb", null, null);
                     int size = response.getPlaceLikelihoods().size();
                     LocationService locationService = new LocationService();
+                    StringBuilder notificationMessage = new StringBuilder();
                     Log.d("test", "start");
                     for(int i = 0; i < size; i++){
                         String pname = response.getPlaceLikelihoods().get(i).getPlace().getName();
@@ -97,17 +98,22 @@ public class PlacesAPI{
                         strBuf.setLength(strBuf.length() - 1);
 
                         List<String> requisites = CheckCategories(strBuf.toString());
-                        Log.d("test", String.valueOf(requisites.size()));
+                        Log.d("test", pname);
+                        Log.d("test", strBuf.toString());
+                        //Log.d("test", String.valueOf(requisites.size()));
                         if(requisites.size() != 0){
                             Log.d("test", "write");
                             //WriteToDatabase(pname, latitude, longitude, strBuf.toString());
                             //sendNotification(List<買いたい物>, List<買える施設>);
                             //じゃがいも、たまねぎ→ショージ
                             //トイレットペーパー→コスモス、ショージ
-                            locationService.sendNotification(context, pname + "で" + requisites.toString() + "が購入できます");
+                            //locationService.sendNotification(context, pname + "で" + requisites.toString() + "が購入できます");
+                            notificationMessage.append(pname + "で" + requisites.toString() + "が購入できます\n");
                         }
                     }
-
+                    if(notificationMessage.length() != 0){
+                        locationService.sendNotification(context, notificationMessage.toString());
+                    }
                 })
                 .addOnFailureListener(
                         (exception) -> {
@@ -140,7 +146,6 @@ public class PlacesAPI{
             switch(requisiteCategory){
                 case "食料品":
                     for(String storeCategory: categoryLists.foodStore){
-                        Log.d("test", "food");
                         String[] category = categories.split(", ", -1);
                         for(int j = 0; j < category.length; j++){
                             //買いたい物が買えるか判定
@@ -152,7 +157,6 @@ public class PlacesAPI{
                     break;
                 case "日用品":
                     for(String storeCategory: categoryLists.groceryStore){
-                        Log.d("test", "grocery");
                         String[] category = categories.split(", ", -1);
                         for(int j = 0; j < category.length; j++){
                             //買いたい物が買えるか判定
@@ -163,7 +167,6 @@ public class PlacesAPI{
                     }
                     break;
                 case "衣料品":
-                    Log.d("test", "clothing");
                     for(String storeCategory: categoryLists.clothingStore){
                         String[] category = categories.split(", ", -1);
                         for(int j = 0; j < category.length; j++){
