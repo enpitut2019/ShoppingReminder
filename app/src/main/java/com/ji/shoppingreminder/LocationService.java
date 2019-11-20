@@ -134,6 +134,9 @@ public class LocationService extends Service implements LocationListener{
 
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         MinTime, MinDistance, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        MinTime, MinDistance, this);
+                sendMessage("start GPS");
             } catch (Exception e) {
                 e.printStackTrace();
             }
