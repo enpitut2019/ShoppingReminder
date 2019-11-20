@@ -67,11 +67,13 @@ public class MainActivity extends AppCompatActivity {
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
-//        Context context = getApplicationContext();
-//
+        //これからは使わない
 //        textView = findViewById(R.id.log_text);
-//
-//        // Android 6, API 23以上でパーミッシンの確認
+
+        Context context = getApplicationContext();
+
+
+        // Android 6, API 23以上でパーミッシンの確認(現状要らないのでコメントアウト)
 //        if(Build.VERSION.SDK_INT >= 23){
 //            textView.setText("API23 over");
 //            checkPermission();
@@ -80,23 +82,26 @@ public class MainActivity extends AppCompatActivity {
 //            startLocationService();
 //        }
 //
-//        mReceiver = new BroadcastReceiver() {
-//            @Override
-//            public void onReceive(Context context, Intent intent) {
-//                // このonReceiveでMainServiceからのIntentを受信する。
-//                Bundle bundle = intent.getExtras();
-//                String message = bundle.getString("message");
-//                // TextViewへ文字列をセット
+        mReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                // このonReceiveでMainServiceからのIntentを受信する。
+                Bundle bundle = intent.getExtras();
+                String message = bundle.getString("message");
+                // TextViewへ文字列をセット
 //                textView.setText(message);
-//            }
-//        };
-//
-//        mIntentFilter = new IntentFilter();
-//        mIntentFilter.addAction("LocationService");
-//        registerReceiver(mReceiver, mIntentFilter);
-//
+            }
+        };
+
+        mIntentFilter = new IntentFilter();
+        mIntentFilter.addAction("LocationService");
+        registerReceiver(mReceiver, mIntentFilter);
+
+        //使わない
 //        InitSpinners();
-//        InitializeDB();
+
+
+        InitializeDB();
 //        //requisiteDBBuilder.onUpgrade(db,0,0);
 
     }
@@ -106,17 +111,17 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
     }
 
-    /**
-     * カテゴリ選択のSpinnerの初期化
-     */
-    public void InitSpinners() {
-        Spinner categorySpinner = findViewById(R.id.categorySpinner);
-        String[] labels = getResources().getStringArray(R.array.category);
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
-        categorySpinner.setAdapter(adapter);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-    }
+//    /**
+//     * カテゴリ選択のSpinnerの初期化
+//     */
+//    public void InitSpinners() {
+//        Spinner categorySpinner = findViewById(R.id.categorySpinner);
+//        String[] labels = getResources().getStringArray(R.array.category);
+//        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
+//        categorySpinner.setAdapter(adapter);
+//
+//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+//    }
 
     /**
      * RequisiteDataBaseの初期化
@@ -321,6 +326,15 @@ public class MainActivity extends AppCompatActivity {
                 readRequisiteData();
             }
         });
+    }
+
+    public void InsertRequisiteDB(String name, String category){
+        ContentValues values = new ContentValues();
+
+        values.put("name", name);
+        values.put("category", categoryString);
+
+        db.insert("requisitedb", null, values);
     }
 
     @Override

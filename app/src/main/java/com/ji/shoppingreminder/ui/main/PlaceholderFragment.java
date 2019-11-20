@@ -1,9 +1,12 @@
 package com.ji.shoppingreminder.ui.main;
 
+import android.content.ContentValues;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -52,8 +55,32 @@ public class PlaceholderFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String s) {
 //                textView.setText(s);
+            }  });
+
+        Button categoryDecideButton = root.findViewById(R.id.categoryDecideButton);
+        categoryDecideButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String category = new String();
+
+                switch(getArguments().getInt(ARG_SECTION_NUMBER)){
+                    case 1:
+                        category = getString(R.string.tab_text_1);
+                        break;
+                    case 2:
+                        category = getString(R.string.tab_text_2);
+                        break;
+                    default:
+                        category = "Null Exception";
+                        break;
+                }
+
+                Log.d("debug", category);
+
+
             }
         });
+
         return root;
     }
 }
