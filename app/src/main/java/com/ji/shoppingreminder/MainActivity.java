@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -28,6 +29,7 @@ import android.widget.Toast;
 import android.util.Log;
 
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
+import com.ji.shoppingreminder.ui.main.PlaceholderFragment;
 import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
 
 import java.util.ArrayList;
@@ -35,7 +37,7 @@ import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements PlaceholderFragment.OnClickListener {
 
     private static final int REQUEST_MULTI_PERMISSIONS = 101;
 
@@ -52,6 +54,8 @@ public class MainActivity extends AppCompatActivity {
     private StoreDataBaseBuilder storeDataBaseBuilder;
     private SQLiteDatabase storeDB;
 
+    private SectionsPagerAdapter sectionsPagerAdapter;
+
     /**
      * APIの確認とレシーバーの作成
      * @param savedInstanceState
@@ -61,11 +65,14 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
+        sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+
+        Fragment fragment = sectionsPagerAdapter.getItem(1);
+        ((PlaceholderFragment)fragment).callFromOut();
 
         //これからは使わない
 //        textView = findViewById(R.id.log_text);
@@ -328,11 +335,15 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void InsertRequisiteDB(String name, String category){
+    @Override
+    public void onCategoryClick(int index){
+
         ContentValues values = new ContentValues();
 
-        values.put("name", name);
-        values.put("category", categoryString);
+        values.put("name", "test");
+        values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
+
+        Log.d("category", sectionsPagerAdapter.getPageTitle(index).toString());
 
         db.insert("requisitedb", null, values);
     }

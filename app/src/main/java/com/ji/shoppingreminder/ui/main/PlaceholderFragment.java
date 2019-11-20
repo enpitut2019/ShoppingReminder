@@ -26,6 +26,12 @@ public class PlaceholderFragment extends Fragment {
 
     private PageViewModel pageViewModel;
 
+    private OnClickListener clickListener;
+
+    public interface OnClickListener {
+        void onCategoryClick(int index);
+    }
+
     public static PlaceholderFragment newInstance(int index) {
         PlaceholderFragment fragment = new PlaceholderFragment();
         Bundle bundle = new Bundle();
@@ -57,30 +63,20 @@ public class PlaceholderFragment extends Fragment {
 //                textView.setText(s);
             }  });
 
+        clickListener = (OnClickListener) getActivity();
+
         Button categoryDecideButton = root.findViewById(R.id.categoryDecideButton);
         categoryDecideButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String category = new String();
-
-                switch(getArguments().getInt(ARG_SECTION_NUMBER)){
-                    case 1:
-                        category = getString(R.string.tab_text_1);
-                        break;
-                    case 2:
-                        category = getString(R.string.tab_text_2);
-                        break;
-                    default:
-                        category = "Null Exception";
-                        break;
-                }
-
-                Log.d("debug", category);
-
-
+                clickListener.onCategoryClick(getArguments().getInt(ARG_SECTION_NUMBER) - 1);
             }
         });
 
         return root;
+    }
+
+    public void callFromOut(){
+        Log.d("PlaceholderFragment", "callFromOut this method");
     }
 }
