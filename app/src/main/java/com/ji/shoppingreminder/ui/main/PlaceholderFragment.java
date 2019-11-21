@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -17,6 +18,8 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.ji.shoppingreminder.R;
 
+import org.w3c.dom.Text;
+
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -26,10 +29,13 @@ public class PlaceholderFragment extends Fragment {
 
     private PageViewModel pageViewModel;
 
-    private OnClickListener clickListener;
+    private DBmanager dBmanager;
 
-    public interface OnClickListener {
-        void onCategoryClick(int index);
+    private TextView textView;
+
+    public interface DBmanager {
+        void insertToDB(int index, String item);
+        void displayDBContents(TextView textView, int index);
     }
 
     public static PlaceholderFragment newInstance(int index) {
@@ -63,13 +69,19 @@ public class PlaceholderFragment extends Fragment {
 //                textView.setText(s);
             }  });
 
-        clickListener = (OnClickListener) getActivity();
+        dBmanager = (DBmanager) getActivity();
+
+        EditText editText = root.findViewById(R.id.edit_text);
+        TextView textView = root.findViewById(R.id.text_view);
 
         Button categoryDecideButton = root.findViewById(R.id.categoryDecideButton);
+
+        //DBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
         categoryDecideButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                clickListener.onCategoryClick(getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+                String item = editText.getText().toString();
+                dBmanager.insertToDB(getArguments().getInt(ARG_SECTION_NUMBER) - 1, item);
             }
         });
 

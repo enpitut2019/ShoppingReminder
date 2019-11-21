@@ -37,7 +37,7 @@ import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-public class MainActivity extends AppCompatActivity implements PlaceholderFragment.OnClickListener {
+public class MainActivity extends AppCompatActivity implements PlaceholderFragment.DBmanager {
 
     private static final int REQUEST_MULTI_PERMISSIONS = 101;
 
@@ -336,16 +336,48 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     }
 
     @Override
-    public void onCategoryClick(int index){
+    public void insertToDB(int index, String item){
 
         ContentValues values = new ContentValues();
 
-        values.put("name", "test");
+        values.put("name", item);
         values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
 
         Log.d("category", sectionsPagerAdapter.getPageTitle(index).toString());
 
         db.insert("requisitedb", null, values);
+    }
+
+    @Override
+    public void displayDBContents(TextView textView, int index){
+        db = requisiteDBBuilder.getReadableDatabase();
+        Log.d("debug","**********Cursor");
+
+        Cursor cursor = db.query(
+                "requisitedb",
+                new String[] { "name", "category" },
+                "category = ?",
+                new String[]{sectionsPagerAdapter.getPageTitle(index).toString()},
+                null,
+                null,
+                null
+        );
+
+        cursor.moveToFirst();
+
+        StringBuilder sbuilder = new StringBuilder();
+
+        for (int i = 0; i < cursor.getCount(); i++) {
+            sbuilder.append(cursor.getString(0));
+            sbuilder.append("\n");
+            cursor.moveToNext();
+        }
+
+        // 忘れずに！
+        cursor.close();
+
+        Log.d("debug","**********"+sbuilder.toString());
+        textView.setText(sbuilder.toString());
     }
 
     @Override
