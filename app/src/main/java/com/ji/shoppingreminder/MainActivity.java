@@ -75,20 +75,20 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         ((PlaceholderFragment)fragment).callFromOut();
 
         //これからは使わない
-//        textView = findViewById(R.id.log_text);
+        textView = findViewById(R.id.log_text);
 
         Context context = getApplicationContext();
 
 
         // Android 6, API 23以上でパーミッシンの確認(現状要らないのでコメントアウト)
-//        if(Build.VERSION.SDK_INT >= 23){
-//            textView.setText("API23 over");
-//            checkPermission();
-//        }
-//        else{
-//            startLocationService();
-//        }
-//
+        if(Build.VERSION.SDK_INT >= 23){
+            textView.setText("API23 over");
+            checkPermission();
+        }
+        else{
+            startLocationService();
+        }
+
         mReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
@@ -96,7 +96,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 Bundle bundle = intent.getExtras();
                 String message = bundle.getString("message");
                 // TextViewへ文字列をセット
-//                textView.setText(message);
+                textView.setText(message);
             }
         };
 
@@ -105,11 +105,11 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         registerReceiver(mReceiver, mIntentFilter);
 
         //使わない
-//        InitSpinners();
+        InitSpinners();
 
 
         InitializeDB();
-//        //requisiteDBBuilder.onUpgrade(db,0,0);
+        requisiteDBBuilder.onUpgrade(db,0,0);
 
     }
 
@@ -118,17 +118,17 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         super.onStart();
     }
 
-//    /**
-//     * カテゴリ選択のSpinnerの初期化
-//     */
-//    public void InitSpinners() {
-//        Spinner categorySpinner = findViewById(R.id.categorySpinner);
-//        String[] labels = getResources().getStringArray(R.array.category);
-//        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
-//        categorySpinner.setAdapter(adapter);
-//
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//    }
+    /**
+     * カテゴリ選択のSpinnerの初期化
+     */
+    public void InitSpinners() {
+        Spinner categorySpinner = findViewById(R.id.categorySpinner);
+        String[] labels = getResources().getStringArray(R.array.category);
+        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
+        categorySpinner.setAdapter(adapter);
+
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+    }
 
     /**
      * RequisiteDataBaseの初期化
@@ -280,7 +280,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
      * 位置情報の取得を開始する
      */
     private void startLocationService() {
-        setContentView(R.layout.activity_main);
+//        setContentView(R.layout.activity_main);
         textView = findViewById(R.id.log_text);
 
 
