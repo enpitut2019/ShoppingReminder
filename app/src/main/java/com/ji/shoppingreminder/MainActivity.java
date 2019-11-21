@@ -12,11 +12,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
 import android.app.ActivityManager;
-import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -43,10 +41,6 @@ import android.database.sqlite.SQLiteDatabase;
 public class MainActivity extends AppCompatActivity implements PlaceholderFragment.DBmanager, OnCheckedChangeListener {
 
     private static final int REQUEST_MULTI_PERMISSIONS = 101;
-
-    private BroadcastReceiver mReceiver = null;
-    private IntentFilter mIntentFilter = null;
-    //private TextView textView;
     private String categoryString;
 
     private final int REQUEST_PERMISSION = 1000;
@@ -89,21 +83,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 //        if(!checkPermission()){
 //            requestLocationPermission();
 //        }
-
-        mReceiver = new BroadcastReceiver() {
-            @Override
-            public void onReceive(Context context, Intent intent) {
-                // このonReceiveでMainServiceからのIntentを受信する。
-                Bundle bundle = intent.getExtras();
-                String message = bundle.getString("message");
-                // TextViewへ文字列をセット
-                //textView.setText(message);
-            }
-        };
-
-        mIntentFilter = new IntentFilter();
-        mIntentFilter.addAction("LocationService");
-        registerReceiver(mReceiver, mIntentFilter);
 
         InitializeDB();
     }
@@ -277,7 +256,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
     @Override
     public void onStop(){
-        unregisterReceiver(mReceiver);
         super.onStop();
     }
 

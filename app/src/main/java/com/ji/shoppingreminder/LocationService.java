@@ -8,7 +8,6 @@ import android.app.Notification;
 import android.app.Notification.Style;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
-//import android.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -136,7 +135,6 @@ public class LocationService extends Service implements LocationListener{
                         MinTime, MinDistance, this);
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         MinTime, MinDistance, this);
-                sendMessage("start GPS");
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -194,22 +192,7 @@ public class LocationService extends Service implements LocationListener{
 
         strBuf.append("----------\n");
 
-        sendMessage(strBuf.toString());
-
         placesAPI.GetLocationInfo(context);
-    }
-
-    /**
-     * 位置情報をMainActivityに送信する
-     * @param message 位置情報
-     */
-    public void sendMessage(String message) {
-
-        // IntentをブロードキャストすることでMainActivityへデータを送信
-        Intent intent = new Intent();
-        intent.setAction("LocationService");
-        intent.putExtra("message", message);
-        getBaseContext().sendBroadcast(intent);
     }
 
     /**
