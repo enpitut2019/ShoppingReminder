@@ -11,6 +11,7 @@ import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
+import android.app.ActivityManager;
 import android.content.BroadcastReceiver;
 import android.content.ContentValues;
 import android.content.Context;
@@ -22,10 +23,12 @@ import android.os.Bundle;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
-import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
+import android.widget.CompoundButton;
+import android.widget.CompoundButton.OnCheckedChangeListener;
+import android.widget.Switch;
 import android.util.Log;
 
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
@@ -37,13 +40,13 @@ import java.util.List;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
-public class MainActivity extends AppCompatActivity implements PlaceholderFragment.DBmanager {
+public class MainActivity extends AppCompatActivity implements PlaceholderFragment.DBmanager, OnCheckedChangeListener {
 
     private static final int REQUEST_MULTI_PERMISSIONS = 101;
 
     private BroadcastReceiver mReceiver = null;
     private IntentFilter mIntentFilter = null;
-    private TextView textView;
+    //private TextView textView;
     private String categoryString;
 
     private final int REQUEST_PERMISSION = 1000;
@@ -53,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private SQLiteDatabase db;
     private StoreDataBaseBuilder storeDataBaseBuilder;
     private SQLiteDatabase storeDB;
+    private Switch backgroundSwitch;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
 
@@ -74,20 +78,17 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         Fragment fragment = sectionsPagerAdapter.getItem(1);
         ((PlaceholderFragment)fragment).callFromOut();
 
-        //これからは使わない
-        textView = findViewById(R.id.log_text);
-
-        Context context = getApplicationContext();
-
-
-        // Android 6, API 23以上でパーミッシンの確認(現状要らないのでコメントアウト)
-        if(Build.VERSION.SDK_INT >= 23){
-            textView.setText("API23 over");
-            checkPermission();
+        backgroundSwitch = findViewById(R.id.background_switch);
+        backgroundSwitch.setOnCheckedChangeListener(this);
+        //Serviceが起動中か確認
+        if(isLocationServiceRunning()){
+            backgroundSwitch.setChecked(true);
         }
-        else{
-            startLocationService();
-        }
+
+        //位置情報が許可されていなかったら許可を求める
+//        if(!checkPermission()){
+//            requestLocationPermission();
+//        }
 
         mReceiver = new BroadcastReceiver() {
             @Override
@@ -96,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 Bundle bundle = intent.getExtras();
                 String message = bundle.getString("message");
                 // TextViewへ文字列をセット
-                textView.setText(message);
+                //textView.setText(message);
             }
         };
 
@@ -104,30 +105,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         mIntentFilter.addAction("LocationService");
         registerReceiver(mReceiver, mIntentFilter);
 
-        //使わない
-        InitSpinners();
-
-
         InitializeDB();
-        requisiteDBBuilder.onUpgrade(db,0,0);
-
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-    }
-
-    /**
-     * カテゴリ選択のSpinnerの初期化
-     */
-    public void InitSpinners() {
-        Spinner categorySpinner = findViewById(R.id.categorySpinner);
-        String[] labels = getResources().getStringArray(R.array.category);
-        ArrayAdapter<String> adapter = new ArrayAdapter(this, android.R.layout.simple_spinner_item, labels);
-        categorySpinner.setAdapter(adapter);
-
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
     }
 
     /**
@@ -146,101 +129,30 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     }
 
     /**
-     * RequisiteDataBaseのデータを表示する
+     * LocationServiceが起動中か確認する
+     * @return
      */
-    private void readRequisiteData(){
-        db = requisiteDBBuilder.getReadableDatabase();
-        Log.d("debug","**********Cursor");
-
-        Cursor cursor = db.query(
-                "requisitedb",
-                new String[] { "name", "category" },
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        cursor.moveToFirst();
-
-        StringBuilder sbuilder = new StringBuilder();
-
-        for (int i = 0; i < cursor.getCount(); i++) {
-            sbuilder.append(cursor.getString(0));
-            sbuilder.append(": ");
-            sbuilder.append(cursor.getString(1));
-            sbuilder.append("\n");
-            cursor.moveToNext();
+    private boolean isLocationServiceRunning() {
+        ActivityManager manager = (ActivityManager) getApplication().getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo serviceInfo : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (LocationService.class.getName().equals(serviceInfo.service.getClassName())) {
+                return true;
+            }
         }
-
-        // 忘れずに！
-        cursor.close();
-
-        Log.d("debug","**********"+sbuilder.toString());
-        textView.setText(sbuilder.toString());
-    }
-
-    /**
-     * StoreDataBaseのデータを表示する
-     */
-    private void readStoreData(){
-        if(storeDataBaseBuilder == null){
-            storeDataBaseBuilder = new StoreDataBaseBuilder(getApplicationContext());
-        }
-
-        if(storeDB == null){
-            storeDB = storeDataBaseBuilder.getReadableDatabase();
-        }
-
-        Log.d("debug","**********Cursor");
-        Cursor cursor = storeDB.query(
-                "storedb",
-                new String[] {"storeName", "latitude", "longitude", "category"},
-                null,
-                null,
-                null,
-                null,
-                null
-        );
-
-        cursor.moveToFirst();
-
-        StringBuilder sbuilder = new StringBuilder();
-
-        for (int i = 0; i < cursor.getCount(); i++) {
-            sbuilder.append(cursor.getString(0));
-            sbuilder.append(": ");
-            sbuilder.append(cursor.getString(1));
-            sbuilder.append(": ");
-            sbuilder.append(cursor.getString(2));
-            sbuilder.append(": ");
-            sbuilder.append(cursor.getString(3));
-            sbuilder.append("\n");
-            cursor.moveToNext();
-        }
-
-        // 忘れずに！
-        cursor.close();
-
-        Log.d("debug","**********"+sbuilder.toString());
-        textView.setText(sbuilder.toString());
+        return false;
     }
 
     /**
      * 位置情報の許可を確認する
      */
-    public void checkPermission() {
+    public Boolean checkPermission() {
         // 既に許可している
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                == PackageManager.PERMISSION_GRANTED){
-
-            startLocationService();
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            return true;
         }
         // 拒否していた場合
         else{
-            requestLocationPermission();
+            return false;
         }
     }
 
@@ -266,75 +178,53 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if (requestCode == REQUEST_PERMISSION) {
             // 使用が許可された
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startLocationService();
-
+                startService();
             } else {
                 // それでも拒否された時の対応
 
-                toastMake("これ以上なにもできません", 0, -200);
+                toastMake("位置情報を許可しないと施設の情報を取得できません", 0, -200);
             }
         }
     }
 
     /**
-     * 位置情報の取得を開始する
+     * backgroundSwitchが押されたときの処理
+     * @param buttonView
+     * @param isChecked
      */
-    private void startLocationService() {
-//        setContentView(R.layout.activity_main);
-        textView = findViewById(R.id.log_text);
-
-
-        Button buttonStart = findViewById(R.id.button_start);
-        buttonStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getApplication(), LocationService.class);
-
-                // API 26 以降
-                startForegroundService(intent);
-
-                textView.setText(R.string.start);
-
-                // MainActivityを終了させる
-                //finish();
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if(isChecked){
+            //位置情報が許可されている
+            if(checkPermission()){
+                startService();
             }
-        });
-
-        Button buttonReset = findViewById(R.id.button_stop);
-        buttonReset.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Serviceの停止
-                Intent intent = new Intent(getApplication(), LocationService.class);
-                stopService(intent);
-
-                textView.setText(R.string.stop);
+            //位置情報が許可されていない
+            else{
+                requestLocationPermission();
+                buttonView.setChecked(false);
             }
-        });
+        }
+        else{
+            // Serviceの停止
+            Intent intent = new Intent(getApplication(), LocationService.class);
+            stopService(intent);
+        }
 
-        Button btn = (Button)findViewById(R.id.categoryDecideButton);
-        //カテゴリ決定ボタンを押したときの処理
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Spinner spinner = (Spinner)findViewById(R.id.categorySpinner);
-                TextView textView = (TextView)findViewById(R.id.textView);
-
-                categoryString = spinner.getSelectedItem().toString();
-                textView.setText(categoryString);
-
-                //databaseに値を入れる
-                ContentValues values = new ContentValues();
-
-                values.put("name", "test");
-                values.put("category", categoryString);
-
-                db.insert("requisitedb", null, values);
-                readRequisiteData();
-            }
-        });
     }
 
+    private void startService(){
+        Intent intent = new Intent(getApplication(), LocationService.class);
+        // API 26 以降
+        startForegroundService(intent);
+        backgroundSwitch.setChecked(true);
+    }
+
+    /**
+     * 登録ボタンが押されたときに実行され、itemをデータベースに登録する
+     * @param index
+     * @param item
+     */
     @Override
     public void insertToDB(int index, String item){
 
@@ -348,6 +238,11 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         db.insert("requisitedb", null, values);
     }
 
+    /**
+     * タグ毎のデータベース内のitemを表示する
+     * @param textView
+     * @param index
+     */
     @Override
     public void displayDBContents(TextView textView, int index){
         db = requisiteDBBuilder.getReadableDatabase();

@@ -1,11 +1,14 @@
 package com.ji.shoppingreminder.ui.main;
 
 import android.content.ContentValues;
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
@@ -18,8 +21,6 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.ji.shoppingreminder.R;
 
-import org.w3c.dom.Text;
-
 /**
  * A placeholder fragment containing a simple view.
  */
@@ -30,8 +31,7 @@ public class PlaceholderFragment extends Fragment {
     private PageViewModel pageViewModel;
 
     private DBmanager dBmanager;
-
-    private TextView textView;
+    private InputMethodManager inputMethodManager;
 
     public interface DBmanager {
         void insertToDB(int index, String item);
@@ -62,26 +62,39 @@ public class PlaceholderFragment extends Fragment {
             @NonNull LayoutInflater inflater, ViewGroup container,
             Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_main, container, false);
-//        final TextView textView = root.findViewById(R.id.section_label);
         pageViewModel.getText().observe(this, new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
-//                textView.setText(s);
             }  });
 
         dBmanager = (DBmanager) getActivity();
+        inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         EditText editText = root.findViewById(R.id.edit_text);
         TextView textView = root.findViewById(R.id.text_view);
-
         Button categoryDecideButton = root.findViewById(R.id.categoryDecideButton);
+        //タブに対応するデータベース内のアイテムを表示する
+        dBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
 
-        //DBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+        //登録ボタンを押したときの処理
         categoryDecideButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 String item = editText.getText().toString();
+                editText.getEditableText().clear();
                 dBmanager.insertToDB(getArguments().getInt(ARG_SECTION_NUMBER) - 1, item);
+                dBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+            }
+        });
+
+        //キーボード以外をタップしたらキーボードを閉じる
+        root.setOnTouchListener(new View.OnTouchListener() {
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN){
+                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                }
+                return true;
             }
         });
 
