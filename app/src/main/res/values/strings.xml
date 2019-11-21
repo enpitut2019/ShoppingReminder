@@ -4,10 +4,15 @@
     <string name="stop">Stop</string>
     <string name="categoryDecideButton">Button</string>
     <string name="textview">TextView</string>
+    <string name="places_api_key">AIzaSyCu6MTCIQKPkkrwziJooVwSkgUoC-MNIM0</string>
 
     <string-array name="category">
         <item>食料品</item>
         <item>日用品</item>
         <item>衣料品</item>
     </string-array>
+
+    <string name="tab_text_1">食料品</string>
+    <string name="tab_text_2">日用品</string>
+    <string name="tab_text_3">衣料品</string>
 </resources>

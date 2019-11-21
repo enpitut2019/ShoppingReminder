@@ -1,11 +1,14 @@
 package com.ji.shoppingreminder;
 
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.NotificationCompat;
 
 import android.Manifest;
 import android.app.Notification;
+import android.app.Notification.Style;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
+//import android.app.NotificationCompat;
 import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
@@ -24,6 +27,8 @@ import android.os.IBinder;
 import android.provider.Settings;
 import android.util.Log;
 
+import java.util.Random;
+
 public class LocationService extends Service implements LocationListener{
 
     private LocationManager locationManager;
@@ -32,9 +37,10 @@ public class LocationService extends Service implements LocationListener{
     private static final int MinTime = 1000;
     private static final float MinDistance = 50;
 
-    private NotificationManager notificationManager;
+    private static NotificationManager notificationManager;
 
     Intent intent;
+    PlacesAPI placesAPI;
 
     @Override
     public void onCreate(){
@@ -44,6 +50,9 @@ public class LocationService extends Service implements LocationListener{
 
         // LocationManager インスタンス生成
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
+
+        placesAPI = new PlacesAPI(context, String.valueOf(R.string.places_api_key));
+        placesAPI.InitializeStoreDB();
     }
 
     /**
@@ -107,8 +116,6 @@ public class LocationService extends Service implements LocationListener{
      * 位置情報の取得を開始する
      */
     protected void startGPS() {
-        StringBuilder strBuf = new StringBuilder();
-        strBuf.append("startGPS\n");
 
         final boolean gpsEnabled
                 = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
@@ -127,11 +134,14 @@ public class LocationService extends Service implements LocationListener{
 
                 locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER,
                         MinTime, MinDistance, this);
+                locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
+                        MinTime, MinDistance, this);
+                sendMessage("start GPS");
             } catch (Exception e) {
                 e.printStackTrace();
             }
         } else {
-            strBuf.append("locationManager=null\n");
+
         }
     }
 
@@ -149,6 +159,7 @@ public class LocationService extends Service implements LocationListener{
      */
     @Override
     public void onLocationChanged(Location location) {
+
         StringBuilder strBuf = new StringBuilder();
 
         strBuf.append("----------\n");
@@ -185,20 +196,14 @@ public class LocationService extends Service implements LocationListener{
 
         sendMessage(strBuf.toString());
 
-        float tolerance = 0.001f;
-
-        if ((34.40151f - tolerance <= latitude && latitude <= 34.40151f + tolerance) && (132.713775f - tolerance <= longitude && longitude <= 132.713775f + tolerance)){
-            //通知
-            sendNotification();
-        }
-
+        placesAPI.GetLocationInfo(context);
     }
 
     /**
      * 位置情報をMainActivityに送信する
      * @param message 位置情報
      */
-    private void sendMessage(String message) {
+    public void sendMessage(String message) {
 
         // IntentをブロードキャストすることでMainActivityへデータを送信
         Intent intent = new Intent();
@@ -210,8 +215,7 @@ public class LocationService extends Service implements LocationListener{
     /**
      * PUSH通知を送信する
      */
-    private void sendNotification(){
-        Log.d("test", "notification");
+    public static void sendNotification(Context context, String message){
         String channelId = "default";
         String title = context.getString(R.string.app_name);
         // Notification　Channel 設定
@@ -220,20 +224,26 @@ public class LocationService extends Service implements LocationListener{
         //通知をタップしたときに開くアクティビティー
         Intent  mainIntent= new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //通知のIDをランダムに取得
+        int notificationId = new Random().nextInt(100) + 2;
 
+        Log.d("test", "notification");
+        Log.d("test", message);
         if(notificationManager != null) {
             notificationManager.createNotificationChannel(channel);
+            Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle()
+                    .setBigContentTitle(title)
+                    .bigText(message);
             Notification notification = new Notification.Builder(context, channelId)
-                    .setContentTitle(title)
                     // アイコン設定
                     .setSmallIcon(R.drawable.ic_stat_name)
-                    .setContentText("目的地到着")
                     .setAutoCancel(true)
                     //通知をタップしたときに開くアクティビティー
                     .setContentIntent(pendingIntent)
                     .setWhen(System.currentTimeMillis())
+                    .setStyle(bigTextStyle)
                     .build();
-            notificationManager.notify(100, notification);
+            notificationManager.notify(notificationId, notification);
         }
     }
 
