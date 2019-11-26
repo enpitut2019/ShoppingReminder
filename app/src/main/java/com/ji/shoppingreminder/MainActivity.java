@@ -272,8 +272,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             cursor.moveToNext();
         }
 
-        Log.d("test", itemList.toString());
-
         // 忘れずに！
         cursor.close();
         ViewAdapter viewAdapter = new ViewAdapter(itemList);

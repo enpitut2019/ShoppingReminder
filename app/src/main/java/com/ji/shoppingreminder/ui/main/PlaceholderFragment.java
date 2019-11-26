@@ -96,8 +96,9 @@ public class PlaceholderFragment extends Fragment {
         //キーボード以外をタップしたらキーボードを閉じる
         root.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
+                Log.d("test", "tap");
                 if(event.getAction() == MotionEvent.ACTION_DOWN){
-                    inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                    inputMethodManager.hideSoftInputFromWindow(root.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
                 }
                 return true;
             }

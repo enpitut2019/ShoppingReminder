@@ -7,6 +7,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.TextView;
 
 import com.ji.shoppingreminder.R;
@@ -29,11 +31,19 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
         return new ViewHolder(view);
     }
 
-    // データを表示する
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        //Log.d("test", items.get(position));
-        holder.itemText.setText(items.get(position));
+        //データを表示する
+        String item = items.get(position);
+        holder.itemText.setText(item);
+        holder.checkBox.setOnCheckedChangeListener(null);
+        holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                //set your object's last status
+                Log.d("test", item);
+            }
+        });
     }
 
     //表示するアイテムの数を返す
@@ -46,10 +56,12 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     //Adapterがインフレートした1行分のレイアウトからViewの参照を取得
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView itemText;
+        CheckBox checkBox;
 
         ViewHolder(View v) {
             super(v);
-            itemText = (TextView)v.findViewById(R.id.item_text);
+            itemText = (TextView) v.findViewById(R.id.item_text);
+            checkBox = (CheckBox) v.findViewById(R.id.check_box);
         }
     }
 }
