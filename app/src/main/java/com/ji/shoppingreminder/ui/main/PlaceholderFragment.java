@@ -81,10 +81,12 @@ public class PlaceholderFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                String item = editText.getText().toString();
+                String item = editText.getText().toString().trim();
                 editText.getEditableText().clear();
-                dBmanager.insertToDB(getArguments().getInt(ARG_SECTION_NUMBER) - 1, item);
-                dBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+                if(item.length() != 0){
+                    dBmanager.insertToDB(getArguments().getInt(ARG_SECTION_NUMBER) - 1, item);
+                    dBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+                }
             }
         });
 
