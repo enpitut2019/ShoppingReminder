@@ -115,14 +115,6 @@ public class LocationService extends Service implements LocationListener{
      * 位置情報の取得を開始する
      */
     protected void startGPS() {
-
-        final boolean gpsEnabled
-                = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-        if (!gpsEnabled) {
-            // GPSを設定するように促す
-            enableLocationSettings();
-        }
-
         if (locationManager != null) {
             try {
                 if (ActivityCompat.checkSelfPermission(this,
@@ -141,14 +133,6 @@ public class LocationService extends Service implements LocationListener{
         } else {
 
         }
-    }
-
-    /**
-     * GPSがoffのときにGPSの設定を表示する
-     */
-    private void enableLocationSettings() {
-        Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-        startActivity(settingsIntent);
     }
 
     /**

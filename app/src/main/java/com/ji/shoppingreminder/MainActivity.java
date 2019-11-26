@@ -16,8 +16,10 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -51,6 +53,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private StoreDataBaseBuilder storeDataBaseBuilder;
     private SQLiteDatabase storeDB;
     private Switch backgroundSwitch;
+    LocationManager locationManager;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
 
@@ -78,6 +81,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if(isLocationServiceRunning()){
             backgroundSwitch.setChecked(true);
         }
+        // LocationManager インスタンス生成
+        locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
         //位置情報が許可されていなかったら許可を求める
 //        if(!checkPermission()){
@@ -174,14 +179,22 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if(isChecked){
-            //位置情報が許可されている
-            if(checkPermission()){
-                startService();
-            }
-            //位置情報が許可されていない
-            else{
+            final boolean gpsEnabled
+                    = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
+            //アプリの位置情報が許可されていない
+            if(!checkPermission()){
                 requestLocationPermission();
                 buttonView.setChecked(false);
+            }
+            //端末の位置情報が許可されていない
+            else if(!gpsEnabled){
+                // GPSを設定するように促す
+                enableLocationSettings();
+                buttonView.setChecked(false);
+            }
+            //サービスの起動
+            else{
+                startService();
             }
         }
         else{
@@ -189,7 +202,14 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             Intent intent = new Intent(getApplication(), LocationService.class);
             stopService(intent);
         }
+    }
 
+    /**
+     * GPSがoffのときにGPSの設定を表示する
+     */
+    private void enableLocationSettings() {
+        Intent settingsIntent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+        startActivity(settingsIntent);
     }
 
     private void startService(){
