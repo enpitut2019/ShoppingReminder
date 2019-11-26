@@ -13,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -35,7 +38,7 @@ public class PlaceholderFragment extends Fragment {
 
     public interface DBmanager {
         void insertToDB(int index, String item);
-        void displayDBContents(TextView textView, int index);
+        void displayDBContents(RecyclerView recyclerView, int index);
     }
 
     public static PlaceholderFragment newInstance(int index) {
@@ -71,10 +74,10 @@ public class PlaceholderFragment extends Fragment {
         inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
         EditText editText = root.findViewById(R.id.edit_text);
-        TextView textView = root.findViewById(R.id.text_view);
+        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
         Button categoryDecideButton = root.findViewById(R.id.categoryDecideButton);
         //タブに対応するデータベース内のアイテムを表示する
-        dBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+        dBmanager.displayDBContents(recyclerView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
 
         //登録ボタンを押したときの処理
         categoryDecideButton.setOnClickListener(new View.OnClickListener() {
@@ -85,7 +88,7 @@ public class PlaceholderFragment extends Fragment {
                 editText.getEditableText().clear();
                 if(item.length() != 0){
                     dBmanager.insertToDB(getArguments().getInt(ARG_SECTION_NUMBER) - 1, item);
-                    dBmanager.displayDBContents(textView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+                    dBmanager.displayDBContents(recyclerView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
                 }
             }
         });
