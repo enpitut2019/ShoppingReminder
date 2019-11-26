@@ -124,7 +124,6 @@ public class PlacesAPI{
         cursor.moveToFirst();
         CategoryLists categoryLists = new CategoryLists();
         List<String> requisites = new ArrayList<String>();
-        List<String> canBuyCategory = new ArrayList<String>();
         for (int i = 0; i < cursor.getCount(); i++) {
             //買いたい物のカテゴリ
             String requisiteCategory = cursor.getString(1);
@@ -136,7 +135,6 @@ public class PlacesAPI{
                             //買いたい物が買えるか判定
                             if(category[j].equals(storeCategory)){
                                 requisites.add(cursor.getString(0));
-                                canBuyCategory.add(requisiteCategory);
                             }
                         }
                     }
@@ -148,7 +146,6 @@ public class PlacesAPI{
                             //買いたい物が買えるか判定
                             if(category[j].equals(storeCategory)){
                                 requisites.add(cursor.getString(0));
-                                canBuyCategory.add(requisiteCategory);
                             }
                         }
                     }
@@ -160,7 +157,6 @@ public class PlacesAPI{
                             //買いたい物が買えるか判定
                             if(category[j].equals(storeCategory)){
                                 requisites.add(cursor.getString(0));
-                                canBuyCategory.add(requisiteCategory);
                             }
                         }
                     }
@@ -174,7 +170,6 @@ public class PlacesAPI{
 
         // 忘れずに！
         cursor.close();
-        //return requisites;
-        return canBuyCategory;
+        return requisites;
     }
 }

@@ -24,76 +24,19 @@
             android:visibility="visible"
             app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="#cdf"
-                android:orientation="vertical"
-                tools:context=".MainActivity">
+            <Switch
+                android:id="@+id/background_switch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:showText="true"
+                android:text="BackGround"
+                android:textOff="OFF"
+                android:textOn="ON"
+                android:textSize="18sp" />
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
-                    android:background="#48f"
-                    android:gravity="center"
-                    android:orientation="horizontal">
-
-                    <Button
-                        android:id="@+id/button_start"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:text="@string/start"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/button_stop"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:text="@string/stop"
-                        android:textSize="18sp" />
-
-                    <Button
-                        android:id="@+id/categoryDecideButton"
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="5dp"
-                        android:layout_weight="1"
-                        android:text="@string/categoryDecideButton"
-                        android:textSize="18sp" />
-
-                </LinearLayout>
-
-                <Spinner
-                    android:id="@+id/categorySpinner"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/category" />
-
-                <TextView
-                    android:id="@+id/textView"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="@string/textview" />
-
-                <ScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="20dp">
-
-                    <TextView
-                        android:id="@+id/log_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text=""
-                        android:textColor="#000" />
-                </ScrollView>
-
-            </LinearLayout>
         </androidx.core.widget.NestedScrollView>
 
         <com.google.android.material.tabs.TabLayout
