@@ -185,6 +185,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     @Override
     public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
         if(isChecked){
+            locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
             final boolean gpsEnabled
                     = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
             //アプリの位置情報が許可されていない

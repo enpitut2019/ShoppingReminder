@@ -14,6 +14,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
+import android.graphics.drawable.Icon;
 import android.icu.text.SimpleDateFormat;
 import android.icu.util.TimeZone;
 import android.location.Location;
@@ -65,12 +66,11 @@ public class LocationService extends Service implements LocationListener{
     public int onStartCommand(Intent intent, int flags, int startId){
         int requestCode = 0;
         String channelId = "background";
-        String title = context.getString(R.string.app_name);
-        this.intent = intent;
+        this.intent = new Intent(context, MainActivity.class);
 
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(context, requestCode,
-                        intent, PendingIntent.FLAG_UPDATE_CURRENT);
+                        this.intent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         // ForegroundにするためNotificationが必要、Contextを設定
         notificationManager =
@@ -79,7 +79,7 @@ public class LocationService extends Service implements LocationListener{
 
         // Notification　Channel 設定
         NotificationChannel channel = new NotificationChannel(
-                channelId, title , NotificationManager.IMPORTANCE_DEFAULT);
+                channelId, "GPSの起動を通知" , NotificationManager.IMPORTANCE_DEFAULT);
         channel.setDescription("Silent Notification");
         // 通知音を消さないと毎回通知音が出てしまう
         // この辺りの設定はcleanにしてから変更
@@ -93,10 +93,9 @@ public class LocationService extends Service implements LocationListener{
         if(notificationManager != null) {
             notificationManager.createNotificationChannel(channel);
             Notification notification = new Notification.Builder(context, channelId)
-                    .setContentTitle(title)
+                    .setContentTitle("GPS作動中です")
                     // アイコン設定
                     .setSmallIcon(R.drawable.ic_stat_name)
-                    .setContentText("GPS")
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent)
                     .setWhen(System.currentTimeMillis())
@@ -182,35 +181,52 @@ public class LocationService extends Service implements LocationListener{
     /**
      * PUSH通知を送信する
      */
-    public static void sendNotification(Context context, String message){
+    public static void sendNotification(Context context, String requisiteList, String storeList, int index){
+        Icon icon = null;
+        switch (index){
+            case 10:
+                icon = Icon.createWithResource(context, R.drawable.ic_stat_food);
+                break;
+            case 20:
+                icon = Icon.createWithResource(context, R.drawable.ic_stat_grocery);
+                break;
+            case 30:
+                icon = Icon.createWithResource(context, R.drawable.ic_stat_clothing);
+                break;
+            default:
+                break;
+        }
+
         String channelId = "default";
-        String title = context.getString(R.string.app_name);
         // Notification　Channel 設定
         NotificationChannel channel = new NotificationChannel(
-                channelId, title , NotificationManager.IMPORTANCE_DEFAULT);
+                channelId, "リストと店舗の通知" , NotificationManager.IMPORTANCE_DEFAULT);
         //通知をタップしたときに開くアクティビティー
-        Intent  mainIntent= new Intent(context, MainActivity.class);
+        Intent  mainIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        //通知のIDをランダムに取得
-        int notificationId = new Random().nextInt(100) + 2;
+
+        int notificationId = index;
 
         Log.d("test", "notification");
-        Log.d("test", message);
+        Log.d("test", storeList);
         if(notificationManager != null) {
             notificationManager.createNotificationChannel(channel);
             Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle()
-                    .setBigContentTitle(title)
-                    .bigText(message);
+                    .setBigContentTitle(requisiteList)
+                    .bigText(storeList);
             Notification notification = new Notification.Builder(context, channelId)
+                    .setContentTitle(requisiteList)
+                    .setContentText(storeList)
                     // アイコン設定
                     .setSmallIcon(R.drawable.ic_stat_name)
+                    .setLargeIcon(icon)
                     .setAutoCancel(true)
                     //通知をタップしたときに開くアクティビティー
                     .setContentIntent(pendingIntent)
                     .setWhen(System.currentTimeMillis())
                     .setStyle(bigTextStyle)
                     .build();
-            notificationManager.notify(notificationId, notification);
+            notificationManager.notify(notificationId, bigTextStyle.build());
         }
     }
 
