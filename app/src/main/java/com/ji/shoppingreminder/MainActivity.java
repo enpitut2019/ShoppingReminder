@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -29,11 +30,13 @@ import android.widget.Toast;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 import com.ji.shoppingreminder.ui.main.PlaceholderFragment;
 import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
+import com.ji.shoppingreminder.ui.main.ViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +56,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private StoreDataBaseBuilder storeDataBaseBuilder;
     private SQLiteDatabase storeDB;
     private Switch backgroundSwitch;
-    LocationManager locationManager;
+    private LocationManager locationManager;
+    private LinearLayoutManager linearLayoutManager;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
 
@@ -74,6 +78,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         Fragment fragment = sectionsPagerAdapter.getItem(1);
         ((PlaceholderFragment)fragment).callFromOut();
+
+        linearLayoutManager = new LinearLayoutManager(this);
 
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
@@ -239,11 +245,11 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
     /**
      * タグ毎のデータベース内のitemを表示する
-     * @param textView
+     * @param recyclerView
      * @param index
      */
     @Override
-    public void displayDBContents(TextView textView, int index){
+    public void displayDBContents(RecyclerView recyclerView, int index){
         db = requisiteDBBuilder.getReadableDatabase();
         Log.d("debug","**********Cursor");
 
@@ -259,19 +265,18 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         cursor.moveToFirst();
 
-        StringBuilder sbuilder = new StringBuilder();
+        List<String> itemList = new ArrayList<String>();
 
         for (int i = 0; i < cursor.getCount(); i++) {
-            sbuilder.append(cursor.getString(0));
-            sbuilder.append("\n");
+            itemList.add(cursor.getString(0));
             cursor.moveToNext();
         }
 
         // 忘れずに！
         cursor.close();
-
-        Log.d("debug","**********"+sbuilder.toString());
-        textView.setText(sbuilder.toString());
+        ViewAdapter viewAdapter = new ViewAdapter(itemList);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(viewAdapter);
     }
 
     @Override
