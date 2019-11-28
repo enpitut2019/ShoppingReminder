@@ -8,42 +8,36 @@
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appbar"
-        android:layout_height="wrap_content"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay">
 
-<!--        <androidx.appcompat.widget.Toolbar-->
-<!--            android:layout_height="?attr/actionBarSize"-->
-<!--            android:layout_width="match_parent"-->
-<!--            app:layout_scrollFlags="scroll|enterAlways"></androidx.appcompat.widget.Toolbar>-->
-
-        <androidx.core.widget.NestedScrollView
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-
-            android:visibility="visible"
-            app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="horizontal">
 
             <Switch
                 android:id="@+id/background_switch"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:showText="true"
-                android:text="BackGround"
-                android:textOff="OFF"
-                android:textOn="ON"
+                android:layout_marginStart="16dp"
+                android:showText="false"
+                android:text="GPS"
                 android:textSize="18sp" />
 
-        </androidx.core.widget.NestedScrollView>
+            <androidx.appcompat.widget.Toolbar
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layout_scrollFlags="scroll|enterAlways"></androidx.appcompat.widget.Toolbar>
+        </LinearLayout>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="?attr/colorPrimary"/>
+            android:background="?attr/colorPrimary" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
