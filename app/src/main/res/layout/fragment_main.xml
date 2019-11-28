@@ -68,7 +68,7 @@
             android:textAlignment="center"
             android:textAppearance="@style/TextAppearance.AppCompat.Body1"
             android:textColor="@android:color/white"
-            android:textIsSelectable="true"
+            android:textIsSelectable="false"
             android:textSize="30sp"
             android:typeface="monospace" />
 
