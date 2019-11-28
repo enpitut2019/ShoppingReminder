@@ -17,7 +17,6 @@ public class CategoryLists {
             add("GROCERY_OR_SUPERMARKET ");
             add("SUPERMARKET");
             add("PHARMACY");
-            add("UNIVERSITY");
         }
     };
 
