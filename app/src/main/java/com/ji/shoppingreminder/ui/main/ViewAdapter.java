@@ -17,9 +17,19 @@ import java.util.List;
 
 public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     private List<String> items;
+    private List<Integer> notificationList;
+    private Boolean beNotificated;
+    private ListViewManager listViewManager;
 
-    public ViewAdapter(List<String> data) {
+    //親フラグメントのメソッドを呼び出すためのインターフェース
+    public interface ListViewManager{
+        void searchItem(String item);
+    }
+
+    public ViewAdapter(List<String> data,List<Integer> notificationList, ListViewManager listviewManager) {
         items = data;
+        this.notificationList = notificationList;
+        this.listViewManager = listviewManager;
     }
 
     @Override
@@ -37,11 +47,13 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
         String item = items.get(position);
         holder.itemText.setText(item);
         holder.checkBox.setOnCheckedChangeListener(null);
+        //0/1をfalse/trueに変換
+        beNotificated = (notificationList.get(position) == 1);
+        holder.checkBox.setChecked(beNotificated);
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                //set your object's last status
-                Log.d("test", item);
+                listViewManager.searchItem(item);
             }
         });
     }

@@ -18,7 +18,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
-import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Gravity;
@@ -30,7 +29,6 @@ import android.widget.Toast;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Switch;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
@@ -58,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private Switch backgroundSwitch;
     private LocationManager locationManager;
     private LinearLayoutManager linearLayoutManager;
+    private List<ViewAdapter> viewAdapterList;
 
     private SectionsPagerAdapter sectionsPagerAdapter;
 
@@ -76,9 +75,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
-        Fragment fragment = sectionsPagerAdapter.getItem(1);
-        ((PlaceholderFragment)fragment).callFromOut();
-
         linearLayoutManager = new LinearLayoutManager(this);
 
         backgroundSwitch = findViewById(R.id.background_switch);
@@ -89,11 +85,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         }
         // LocationManager インスタンス生成
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
-
-        //位置情報が許可されていなかったら許可を求める
-//        if(!checkPermission()){
-//            requestLocationPermission();
-//        }
 
         InitializeDB();
     }
@@ -113,9 +104,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if(db == null){
             db = requisiteDBBuilder.getWritableDatabase();
         }
-
-        ContentValues values = new ContentValues();
-
     }
 
     /**
@@ -238,6 +226,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         values.put("name", item);
         values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
+        values.put("notification", 1);
 
         Log.d("category", sectionsPagerAdapter.getPageTitle(index).toString());
 
@@ -245,39 +234,85 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     }
 
     /**
-     * タグ毎のデータベース内のitemを表示する
-     * @param recyclerView
+     * タグ毎のデータベース内のitemを取得する
      * @param index
      */
     @Override
-    public void displayDBContents(RecyclerView recyclerView, int index){
+    public List<String> getDBContents(int index){
+        db = requisiteDBBuilder.getReadableDatabase();
+        Log.d("debug","**********Cursor");
+        //notificationの値の降順で並び替え
+        String orderBy = "notification DESC";
+
+        Cursor cursor = db.query(
+                "requisitedb",
+                new String[] { "name", "notification" },
+                "category = ?",
+                new String[]{sectionsPagerAdapter.getPageTitle(index).toString()},
+                null,
+                null,
+                orderBy
+        );
+
+        cursor.moveToFirst();
+
+        List<String> itemList = new ArrayList<String>();
+        //name, notification のかたちでリストに格納する
+        for (int i = 0; i < cursor.getCount(); i++) {
+            itemList.add(cursor.getString(0) + "," + cursor.getInt(1));
+            cursor.moveToNext();
+        }
+
+        // 忘れずに！
+        cursor.close();
+
+        return itemList;
+    }
+
+    /**
+     * itemのnotificationの状態を取得する
+     * @param item
+     * @return
+     */
+    @Override
+    public Boolean searchItem(String item){
         db = requisiteDBBuilder.getReadableDatabase();
         Log.d("debug","**********Cursor");
 
         Cursor cursor = db.query(
                 "requisitedb",
-                new String[] { "name", "category" },
-                "category = ?",
-                new String[]{sectionsPagerAdapter.getPageTitle(index).toString()},
+                new String[] {"notification"},
+                "name = ?",
+                new String[]{item},
                 null,
                 null,
                 null
         );
 
         cursor.moveToFirst();
-
-        List<String> itemList = new ArrayList<String>();
-
-        for (int i = 0; i < cursor.getCount(); i++) {
-            itemList.add(cursor.getString(0));
-            cursor.moveToNext();
+        Log.d("test", cursor.getString(0));
+        int notification = cursor.getInt(0);
+        //通知できないように変更
+        if(notification == 1){
+            changeItemState(item, 0);
+            return false;
         }
+        //通知できるように変更
+        else{
+            changeItemState(item, 1);
+            return true;
+        }
+    }
 
-        // 忘れずに！
-        cursor.close();
-        ViewAdapter viewAdapter = new ViewAdapter(itemList);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        recyclerView.setAdapter(viewAdapter);
+    /**
+     * itemの通知許可状態を変更する
+     * @param item
+     * @param state
+     */
+    private void changeItemState(String item, int state){
+        ContentValues values = new ContentValues();
+        values.put("notification", state);
+        db.update("requisitedb", values, "name = ?", new String[]{item});
     }
 
     @Override
