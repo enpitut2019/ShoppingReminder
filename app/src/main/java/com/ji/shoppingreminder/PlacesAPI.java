@@ -79,7 +79,6 @@ public class PlacesAPI{
                     List<StringBuilder> storeList = new ArrayList<>();
                     for (int i = 0; i < 3; i++){
                         StringBuilder sb = new StringBuilder();
-//                        sb.append("店舗が見つかりました\n\n");
                         storeList.add(sb);
                     }
                     List<String> requisiteList = new ArrayList<>();
@@ -151,7 +150,7 @@ public class PlacesAPI{
     }
 
     /**
-     * デーだベースから買いたい物をカテゴリを指定して抽出
+     * データベースから買いたい物をカテゴリを指定して抽出
      * @param category
      * @return 買いたい物が入った文字列
      */
@@ -160,8 +159,8 @@ public class PlacesAPI{
         Cursor cursor = requisiteDB.query(
                 "requisitedb",
                 new String[] { "name", "category" },
-                "category = ?",
-                new String[] {category},
+                "category = ? AND notification = ?",
+                new String[] {category, "1"},
                 null,
                 null,
                 null

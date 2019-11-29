@@ -228,8 +228,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
         values.put("notification", 1);
 
-        Log.d("category", sectionsPagerAdapter.getPageTitle(index).toString());
-
         db.insert("requisitedb", null, values);
     }
 
@@ -253,7 +251,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 null,
                 orderBy
         );
-
         cursor.moveToFirst();
 
         List<String> itemList = new ArrayList<String>();
@@ -262,10 +259,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             itemList.add(cursor.getString(0) + "," + cursor.getInt(1));
             cursor.moveToNext();
         }
-
         // 忘れずに！
         cursor.close();
-
         return itemList;
     }
 
