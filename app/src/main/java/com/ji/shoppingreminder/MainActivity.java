@@ -8,7 +8,6 @@ import androidx.annotation.NonNull;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.viewpager.widget.ViewPager;
 
 import android.Manifest;
@@ -22,7 +21,9 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Gravity;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
@@ -34,7 +35,6 @@ import android.util.Log;
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 import com.ji.shoppingreminder.ui.main.PlaceholderFragment;
 import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
-import com.ji.shoppingreminder.ui.main.ViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,21 +43,15 @@ import android.database.sqlite.SQLiteDatabase;
 
 public class MainActivity extends AppCompatActivity implements PlaceholderFragment.DBmanager, OnCheckedChangeListener {
 
-    private static final int REQUEST_MULTI_PERMISSIONS = 101;
-    private String categoryString;
-
     private final int REQUEST_PERMISSION = 1000;
-    private static final int REQUEST = 1;
 
+    private int currentPage;
+    private EditText editText;
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
-    private StoreDataBaseBuilder storeDataBaseBuilder;
-    private SQLiteDatabase storeDB;
     private Switch backgroundSwitch;
     private LocationManager locationManager;
-    private LinearLayoutManager linearLayoutManager;
-    private List<ViewAdapter> viewAdapterList;
-
+    private InputMethodManager inputMethodManager;
     private SectionsPagerAdapter sectionsPagerAdapter;
 
     /**
@@ -68,14 +62,13 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        currentPage = 0;
+        //タブレイアウトの初期化
         sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
-
-        linearLayoutManager = new LinearLayoutManager(this);
 
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
@@ -86,7 +79,13 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         // LocationManager インスタンス生成
         locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
 
+        inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+        editText = findViewById(R.id.edit_text);
+
         InitializeDB();
+        setViewListener(viewPager);
+        setAddButtonListener();
+        changeEditTextHint();
     }
 
     @Override
@@ -104,6 +103,62 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if(db == null){
             db = requisiteDBBuilder.getWritableDatabase();
         }
+    }
+
+    /**
+     * tabが変わったときの処理
+     * @param viewPager
+     */
+    private void setViewListener(ViewPager viewPager){
+        viewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageSelected(int position) { }
+
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+
+            @Override
+            public void onPageScrollStateChanged(int state) {
+                if(state == ViewPager.SCROLL_STATE_SETTLING) {
+                    //現在のページ数を更新する
+                    currentPage = viewPager.getCurrentItem();
+                    //EditTextのヒントを変更する
+                    changeEditTextHint();
+                    Log.d("test", String.valueOf(currentPage));
+                }
+            }
+        });
+    }
+
+    /**
+     * 登録ボタンをタップしたときの処理
+     */
+    private void setAddButtonListener(){
+        Button addButton = findViewById(R.id.addButton);
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+                String item = editText.getText().toString().trim();
+                editText.getEditableText().clear();
+                if (item.length() != 0) {
+                    //editText内の文字をdatabaseに登録する
+                    insertToDB(currentPage, item);
+                    //recyclerViewの更新
+                    Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                    ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
+                    ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+                }
+            }
+        });
+    }
+
+    /**
+     * EditText内のヒントの文を変更する
+     */
+    private void changeEditTextHint(){
+        String[] hint = getResources().getStringArray(R.array.category);
+        editText.setHint(hint[currentPage]);
     }
 
     /**
@@ -159,7 +214,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 startService();
             } else {
                 // それでも拒否された時の対応
-
                 toastMake("位置情報を許可しないと施設の情報を取得できません", 0, -200);
             }
         }
