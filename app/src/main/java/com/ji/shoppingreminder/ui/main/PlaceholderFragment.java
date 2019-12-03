@@ -11,7 +11,6 @@ import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,21 +23,30 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.ji.shoppingreminder.R;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * A placeholder fragment containing a simple view.
  */
-public class PlaceholderFragment extends Fragment {
+public class PlaceholderFragment extends Fragment implements ViewAdapter.ListViewManager {
 
     private static final String ARG_SECTION_NUMBER = "section_number";
 
     private PageViewModel pageViewModel;
-
+    private RecyclerView recyclerView;
     private DBmanager dBmanager;
     private InputMethodManager inputMethodManager;
 
+    private List<String> itemList;
+    private List<Integer> notificationList;
+    public ViewAdapter viewAdapter;
+
+    //MainActivityのメソッドを呼び出すためのインターフェース
     public interface DBmanager {
         void insertToDB(int index, String item);
-        void displayDBContents(RecyclerView recyclerView, int index);
+        List<String> getDBContents(int index);
+        Boolean searchItem(String item);
     }
 
     public static PlaceholderFragment newInstance(int index) {
@@ -58,6 +66,9 @@ public class PlaceholderFragment extends Fragment {
             index = getArguments().getInt(ARG_SECTION_NUMBER);
         }
         pageViewModel.setIndex(index);
+        //listの初期化
+        itemList = new ArrayList<>();
+        notificationList = new ArrayList<>();
     }
 
     @Override
@@ -73,27 +84,14 @@ public class PlaceholderFragment extends Fragment {
         dBmanager = (DBmanager) getActivity();
         inputMethodManager = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-        EditText editText = root.findViewById(R.id.edit_text);
-        RecyclerView recyclerView = root.findViewById(R.id.recycler_view);
-        Button categoryDecideButton = root.findViewById(R.id.categoryDecideButton);
         //タブに対応するデータベース内のアイテムを表示する
-        dBmanager.displayDBContents(recyclerView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
+        recyclerView = root.findViewById(R.id.recycler_view);
+        setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
+        viewAdapter = new ViewAdapter(itemList, notificationList,  this);
+        recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
+        recyclerView.setAdapter(viewAdapter);
 
-        //登録ボタンを押したときの処理
-        categoryDecideButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                inputMethodManager.hideSoftInputFromWindow(editText.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-                String item = editText.getText().toString().trim();
-                editText.getEditableText().clear();
-                if(item.length() != 0){
-                    dBmanager.insertToDB(getArguments().getInt(ARG_SECTION_NUMBER) - 1, item);
-                    dBmanager.displayDBContents(recyclerView, getArguments().getInt(ARG_SECTION_NUMBER) - 1);
-                }
-            }
-        });
-
-        //キーボード以外をタップしたらキーボードを閉じる
+        //pageview内の何も表示されていないところをタップしたらキーボードを閉じる
         root.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, MotionEvent event) {
                 Log.d("test", "tap");
@@ -103,11 +101,35 @@ public class PlaceholderFragment extends Fragment {
                 return true;
             }
         });
-
         return root;
     }
 
-    public void callFromOut(){
-        Log.d("PlaceholderFragment", "callFromOut this method");
+    /**
+     * itemListとnotificationListを更新する
+     * @param list
+     */
+    public void setList(List<String> list){
+        if(itemList != null){
+            itemList.clear();
+            notificationList.clear();
+        }
+        //item, notification のかたちのデータを分割する
+        for(String item: list){
+            String[] state = item.split(",", 2);
+            itemList.add(state[0]);
+            notificationList.add(Integer.parseInt(state[1]));
+        }
+    }
+
+    /**
+     * チェックボックスをタップされたアイテムに対する処理
+     * @param item
+     */
+    @Override
+    public void searchItem(String item){
+        dBmanager.searchItem(item);
+        //recyclerviewの更新
+        setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
+        viewAdapter.notifyDataSetChanged();
     }
 }

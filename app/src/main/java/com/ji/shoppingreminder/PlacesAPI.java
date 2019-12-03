@@ -79,7 +79,6 @@ public class PlacesAPI{
                     List<StringBuilder> storeList = new ArrayList<>();
                     for (int i = 0; i < 3; i++){
                         StringBuilder sb = new StringBuilder();
-                        sb.append("店舗が見つかりました\n\n");
                         storeList.add(sb);
                     }
                     List<String> requisiteList = new ArrayList<>();
@@ -136,7 +135,9 @@ public class PlacesAPI{
                         }
                     }
                     for (int i = 0; i < requisiteList.size(); i++){
-                        if (requisiteList.get(i) != ""){
+                        if (requisiteList.get(i) != "" && storeList.get(i).length() != 0){
+                            //storeList.get(i)の先頭に文字列を追加
+                            storeList.get(i).insert(0,"店舗が見つかりました\n\n");
                             locationService.sendNotification(context, category[i] + " : " + requisiteList.get(i), storeList.get(i).toString(), 10 * (i + 1));
                         }
                     }
@@ -149,7 +150,7 @@ public class PlacesAPI{
     }
 
     /**
-     * デーだベースから買いたい物をカテゴリを指定して抽出
+     * データベースから買いたい物をカテゴリを指定して抽出
      * @param category
      * @return 買いたい物が入った文字列
      */
@@ -158,8 +159,8 @@ public class PlacesAPI{
         Cursor cursor = requisiteDB.query(
                 "requisitedb",
                 new String[] { "name", "category" },
-                "category = ?",
-                new String[] {category},
+                "category = ? AND notification = ?",
+                new String[] {category, "1"},
                 null,
                 null,
                 null
@@ -168,11 +169,12 @@ public class PlacesAPI{
 
         for (int i = 0; i < cursor.getCount(); i++) {
             buff.append(cursor.getString(0));
-            if (i != cursor.getCount() - 1) {
+            if (i < cursor.getCount() - 1) {
                 buff.append(", ");
+                cursor.moveToNext();
             }
         }
-
+        cursor.close();
         return buff.toString();
     }
 }

@@ -1,6 +1,8 @@
 package com.ji.shoppingreminder.ui.main;
 
 import android.content.Context;
+import android.util.SparseArray;
+import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -18,11 +20,20 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
     @StringRes
     public static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2, R.string.tab_text_3};
+    // 各ページのFragmentのキャッシュ
+    private final SparseArray<Fragment> cachedFragments = new SparseArray<Fragment>();
     private final Context mContext;
 
     public SectionsPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
+    }
+
+    @Override
+    public Object instantiateItem(ViewGroup container, int position) {
+        Fragment fragment = (Fragment) super.instantiateItem(container, position);
+        cachedFragments.put(position, fragment);
+        return fragment;
     }
 
     @Override
@@ -42,5 +53,9 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     public int getCount() {
         // Show 3 total pages.
         return 3;
+    }
+
+    public Fragment getCachedFragmentAt(int position) {
+        return cachedFragments.get(position);
     }
 }
