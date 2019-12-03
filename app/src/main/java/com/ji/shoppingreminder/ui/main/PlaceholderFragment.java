@@ -12,6 +12,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -88,6 +89,9 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         recyclerView = root.findViewById(R.id.recycler_view);
         setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
         viewAdapter = new ViewAdapter(itemList, notificationList,  this);
+//        RecyclerView.ItemDecoration itemDecoration =
+//                new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
+//        recyclerView.addItemDecoration(itemDecoration);
         recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
         recyclerView.setAdapter(viewAdapter);
 

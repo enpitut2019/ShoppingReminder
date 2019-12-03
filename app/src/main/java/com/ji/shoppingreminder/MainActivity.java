@@ -214,7 +214,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 startService();
             } else {
                 // それでも拒否された時の対応
-                toastMake("位置情報を許可しないと施設の情報を取得できません", 0, -200);
+                toastMake("位置情報を許可しないと施設の情報を取得できません", 0, 200);
             }
         }
     }
@@ -276,13 +276,33 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     @Override
     public void insertToDB(int index, String item){
 
-        ContentValues values = new ContentValues();
+        Cursor cursor = db.query(
+                "requisitedb",
+                new String[] {"notification"},
+                "name = ?",
+                new String[]{item},
+                null,
+                null,
+                null
+        );
 
-        values.put("name", item);
-        values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
-        values.put("notification", 1);
+//        cursor.moveToFirst();
+        if (cursor.getCount() == 0){
+            ContentValues values = new ContentValues();
 
-        db.insert("requisitedb", null, values);
+            values.put("name", item);
+            values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
+            values.put("notification", 1);
+
+            db.insert("requisitedb", null, values);
+        } else {
+            cursor.moveToFirst();
+            if (cursor.getInt(0) == 0) {
+                changeItemState(item, 1);
+            } else {
+                toastMake(item + "は既に追加されています", 0, 200);
+            }
+        }
     }
 
     /**
@@ -345,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if(notification == 1){
             changeItemState(item, 0);
             //トーストを表示
-            toastMake("商品を購入しました", 0, -200);
+            toastMake(item + "を購入しました", 0, 200);
             return false;
         }
         //通知できるように変更
@@ -381,7 +401,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         Toast toast = Toast.makeText(this, message, Toast.LENGTH_LONG);
         // 位置調整
-        toast.setGravity(Gravity.CENTER, x, y);
+        toast.setGravity(Gravity.BOTTOM, x, y);
         toast.show();
     }
 }
