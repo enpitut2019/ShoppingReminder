@@ -344,6 +344,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         //通知できないように変更
         if(notification == 1){
             changeItemState(item, 0);
+            //トーストを表示
+            toastMake("商品を購入しました", 0, -200);
             return false;
         }
         //通知できるように変更

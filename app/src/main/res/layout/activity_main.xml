@@ -56,36 +56,41 @@
     </LinearLayout>
 
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:paddingTop="5dp"
-        android:paddingBottom="5dp"
         android:background="#FFDDDDDD"
-        android:gravity="center"
-        android:orientation="horizontal">
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp">
 
         <EditText
             android:id="@+id/edit_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_marginEnd="10dp"
-            android:autofillHints="商品名を入力してください"
+            android:layout_marginStart="24dp"
+            android:layout_marginTop="3dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="3dp"
             android:background="@drawable/frame_style"
-            android:hint="@string/textDefault"
             android:inputType="text"
             android:paddingHorizontal="24dp"
             android:paddingVertical="3dp"
             android:singleLine="false"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/addButton"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Button
             android:id="@+id/addButton"
-            style="@style/Widget.AppCompat.Button.Small"
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="24dp"
+            android:layout_marginBottom="5dp"
             android:background="@drawable/text_button"
             android:text="+"
             android:textAlignment="center"
@@ -93,7 +98,11 @@
             android:textColor="@android:color/white"
             android:textIsSelectable="false"
             android:textSize="30sp"
-            android:typeface="monospace" />
-    </LinearLayout>
+            android:typeface="monospace"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/edit_text"
+            app:layout_constraintTop_toTopOf="parent" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

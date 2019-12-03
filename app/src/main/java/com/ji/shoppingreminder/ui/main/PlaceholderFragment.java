@@ -38,8 +38,8 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
     private DBmanager dBmanager;
     private InputMethodManager inputMethodManager;
 
-    public List<String> itemList;
-    public List<Integer> notificationList;
+    private List<String> itemList;
+    private List<Integer> notificationList;
     public ViewAdapter viewAdapter;
 
     //MainActivityのメソッドを呼び出すためのインターフェース
@@ -101,7 +101,6 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
                 return true;
             }
         });
-
         return root;
     }
 
