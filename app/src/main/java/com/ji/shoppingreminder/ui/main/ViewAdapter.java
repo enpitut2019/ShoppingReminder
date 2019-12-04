@@ -46,7 +46,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
         holder.itemText.setText(item);
         holder.checkBox.setOnCheckedChangeListener(null);
         //0/1をfalse/trueに変換
-        holder.checkBox.setChecked((notificationList.get(position) == 1));
+        holder.checkBox.setChecked((notificationList.get(position) == 0));
         holder.checkBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
