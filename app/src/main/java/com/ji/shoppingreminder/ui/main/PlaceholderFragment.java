@@ -48,6 +48,8 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         void insertToDB(int index, String item);
         List<String> getDBContents(int index);
         Boolean searchItem(String item);
+
+        void deleteItem(String item);
     }
 
     public static PlaceholderFragment newInstance(int index) {
@@ -132,6 +134,14 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
     @Override
     public void searchItem(String item){
         dBmanager.searchItem(item);
+        //recyclerviewの更新
+        setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
+        viewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void deleteItem(String item){
+        dBmanager.deleteItem(item);
         //recyclerviewの更新
         setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
         viewAdapter.notifyDataSetChanged();

@@ -375,6 +375,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         }
     }
 
+    @Override
+    public void deleteItem(String item){
+        db = requisiteDBBuilder.getReadableDatabase();
+        db.delete("requisitedb","name = ?", new String[]{item});
+    }
+
     /**
      * itemの通知許可状態を変更する
      * @param item

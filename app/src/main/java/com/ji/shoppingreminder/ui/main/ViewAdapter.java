@@ -23,6 +23,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     //親フラグメントのメソッドを呼び出すためのインターフェース
     public interface ListViewManager{
         void searchItem(String item);
+        void deleteItem(String item);
     }
 
     public ViewAdapter(List<String> data,List<Integer> notificationList, ListViewManager listviewManager) {
@@ -53,6 +54,14 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
                 listViewManager.searchItem(item);
             }
         });
+
+        holder.view.setOnLongClickListener(new View.OnLongClickListener(){
+            @Override
+            public boolean onLongClick(View view) {
+                listViewManager.deleteItem(item);
+                return false;
+            }
+        });
     }
 
     //表示するアイテムの数を返す
@@ -66,11 +75,13 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     static class ViewHolder extends RecyclerView.ViewHolder {
         TextView itemText;
         CheckBox checkBox;
+        View view;
 
         ViewHolder(View v) {
             super(v);
             itemText = (TextView) v.findViewById(R.id.item_text);
             checkBox = (CheckBox) v.findViewById(R.id.check_box);
+            view = v;
         }
     }
 }
