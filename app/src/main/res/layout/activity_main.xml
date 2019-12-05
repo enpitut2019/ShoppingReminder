@@ -17,11 +17,10 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0">
 
-        <LinearLayout
+        <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="center"
-            android:orientation="horizontal">
+            app:layout_scrollFlags="scroll|enterAlways">
 
             <Switch
                 android:id="@+id/background_switch"
@@ -32,11 +31,7 @@
                 android:text="GPS"
                 android:textSize="18sp" />
 
-            <androidx.appcompat.widget.Toolbar
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layout_scrollFlags="scroll|enterAlways"></androidx.appcompat.widget.Toolbar>
-        </LinearLayout>
+        </androidx.appcompat.widget.Toolbar>
 
         <com.google.android.material.tabs.TabLayout
             android:id="@+id/tabs"
