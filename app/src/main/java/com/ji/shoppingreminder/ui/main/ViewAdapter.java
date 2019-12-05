@@ -24,6 +24,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     public interface ListViewManager{
         void searchItem(String item);
         void deleteItem(String item);
+        void changeMode(Boolean toDeleteMode);
     }
 
     public ViewAdapter(List<String> data,List<Integer> notificationList, ListViewManager listviewManager) {
@@ -58,7 +59,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
         holder.view.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View view) {
-                listViewManager.deleteItem(item);
+                //listViewManager.deleteItem(item);
+                listViewManager.changeMode(true);
                 return false;
             }
         });

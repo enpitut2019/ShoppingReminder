@@ -48,7 +48,7 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         void insertToDB(int index, String item);
         List<String> getDBContents(int index);
         Boolean searchItem(String item);
-
+        void changeMode(Boolean toDeleteMode);
         void deleteItem(String item);
     }
 
@@ -137,6 +137,11 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         //recyclerviewの更新
         setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
         viewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void changeMode(Boolean toDeleteMode){
+        dBmanager.changeMode(toDeleteMode);
     }
 
     @Override

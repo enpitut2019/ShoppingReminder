@@ -50,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
     private Switch backgroundSwitch;
+    private Button returnButton;
+    private Button deleteButton;
     private LocationManager locationManager;
     private InputMethodManager inputMethodManager;
     private SectionsPagerAdapter sectionsPagerAdapter;
@@ -84,6 +86,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         InitializeDB();
         setViewListener(viewPager);
+        setReturnButtonListener();
+        setDeleteButtonListener();
         setAddButtonListener();
         changeEditTextHint();
     }
@@ -126,6 +130,35 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                     changeEditTextHint();
                     Log.d("test", String.valueOf(currentPage));
                 }
+            }
+        });
+    }
+
+    /**
+     * 戻るボタンを押したときの処理
+     */
+    private void setReturnButtonListener(){
+        returnButton = findViewById(R.id.return_button);
+        returnButton.setVisibility(View.GONE);
+        returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                changeMode(false);
+            }
+        });
+    }
+
+    /**
+     * 削除ボタンを押したときの処理
+     */
+    private void setDeleteButtonListener(){
+        deleteButton = findViewById(R.id.delete_button);
+        deleteButton.setVisibility(View.GONE);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+
             }
         });
     }
@@ -379,6 +412,20 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     public void deleteItem(String item){
         db = requisiteDBBuilder.getReadableDatabase();
         db.delete("requisitedb","name = ?", new String[]{item});
+    }
+
+    @Override
+    public void changeMode(Boolean toDeleteMode){
+        if(toDeleteMode){
+            backgroundSwitch.setVisibility(View.GONE);
+            returnButton.setVisibility(View.VISIBLE);
+            deleteButton.setVisibility(View.VISIBLE);
+        }
+        else{
+            backgroundSwitch.setVisibility(View.VISIBLE);
+            returnButton.setVisibility(View.GONE);
+            deleteButton.setVisibility(View.GONE);
+        }
     }
 
     /**

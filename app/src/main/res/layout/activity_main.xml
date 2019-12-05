@@ -22,14 +22,48 @@
             android:layout_height="wrap_content"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <Switch
-                android:id="@+id/background_switch"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:showText="false"
-                android:text="GPS"
-                android:textSize="18sp" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Switch
+                    android:id="@+id/background_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:showText="false"
+                    android:text="GPS"
+                    android:textSize="18sp"
+                    tools:layout_editor_absoluteY="5dp"
+                    tools:visibility="gone" />
+
+                <Button
+                    android:id="@+id/return_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="戻る"
+                    tools:visibility="visible" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="1dp"
+                    android:layout_weight="1"
+                    />
+
+                <Button
+                    android:id="@+id/delete_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top|right"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    android:text="削除"
+                    tools:visibility="visible" />
+            </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>
 
@@ -38,6 +72,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?attr/colorPrimary" />
+
 
     </com.google.android.material.appbar.AppBarLayout>
 
