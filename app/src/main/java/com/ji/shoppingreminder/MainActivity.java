@@ -56,8 +56,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private LocationManager locationManager;
     private InputMethodManager inputMethodManager;
     private SectionsPagerAdapter sectionsPagerAdapter;
-    private ViewAdapter viewAdapter;
-    private PlaceholderFragment placeholderFragment;
 
     /**
      * APIの確認とレシーバーの作成
@@ -147,8 +145,11 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             @Override
             public void onClick(View v) {
                 changeMode(false);
-                viewAdapter = new ViewAdapter();
-                viewAdapter.changeBooleanMode();
+                Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
+                ContentValues values = new ContentValues();
+                values.put("deleteid", 0);
+                db.update("requisitedb", values, "deleteid = 1", null);
             }
         });
     }
@@ -163,7 +164,10 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             @Override
             public void onClick(View v) {
                 Log.d("test", "削除ボタン");
-                deleteItemss();
+                deleteItems();
+                changeMode(false);
+                Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
             }
         });
     }
@@ -415,29 +419,26 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         }
     }
 
+    /**
+     * 選択したアイテムを削除するように設定する
+     * @param item
+     */
     @Override
-    public void deleteItem(String item){
-        db = requisiteDBBuilder.getReadableDatabase();
-        db.delete("requisitedb","name = ?", new String[]{item});
-    }
-
-    @Override
-    public void deleteItems(String item){
+    public void chooseDeleteItem(String item){
         ContentValues values = new ContentValues();
         values.put("deleteid", 1);
         db.update("requisitedb", values, "name = ?", new String[]{item});
-        Log.d("debug","**********aaaaaaa");
     }
 
-    @Override
-    public void deleteItemss(){
-        Log.d("test", "デリート");
+    /**
+     * データベースから選択したアイテムを削除する
+     */
+    public void deleteItems(){
         db = requisiteDBBuilder.getReadableDatabase();
         db.delete("requisitedb","deleteid = 1",null);
         Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
         ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
         ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
-
     }
 
     @Override

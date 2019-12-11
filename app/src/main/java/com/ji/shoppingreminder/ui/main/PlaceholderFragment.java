@@ -49,9 +49,7 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         List<String> getDBContents(int index);
         Boolean searchItem(String item);
         void changeMode(Boolean toDeleteMode);
-        void deleteItem(String item);
-        void deleteItems(String items);
-        void deleteItemss();
+        void chooseDeleteItem(String items);
     }
 
     public static PlaceholderFragment newInstance(int index) {
@@ -147,22 +145,7 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
     }
 
     @Override
-    public void deleteItem(String item){
-        dBmanager.deleteItem(item);
-        //recyclerviewの更新
-        setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
-        viewAdapter.notifyDataSetChanged();
-    }
-
-    @Override
-    public void deleteItems(String item){
-        dBmanager.deleteItems(item);
-    }
-
-    @Override
-    public void deleteItemss(){
-        //recyclerviewの更新
-        setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
-        viewAdapter.notifyDataSetChanged();
+    public void chooseDeleteItem(String item){
+        dBmanager.chooseDeleteItem(item);
     }
 }
