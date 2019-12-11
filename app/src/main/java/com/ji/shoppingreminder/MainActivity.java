@@ -5,6 +5,7 @@ import com.ji.shoppingreminder.database.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
@@ -50,9 +52,17 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private EditText editText;
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
+
     private Switch backgroundSwitch;
+
+    //通常モードのLayout
+    private LinearLayout toolbarNormalLayout;
+    //削除モードのLayout
+    private ConstraintLayout toolbarDeleteLayout;
+
     private Button returnButton;
     private Button deleteButton;
+
     private LocationManager locationManager;
     private InputMethodManager inputMethodManager;
     private SectionsPagerAdapter sectionsPagerAdapter;
@@ -72,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+
+        toolbarNormalLayout = findViewById(R.id.toolbarNormalLayout);
+        toolbarDeleteLayout = findViewById(R.id.toolbarDeleteLayout);
 
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
@@ -140,7 +153,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
      */
     private void setReturnButtonListener(){
         returnButton = findViewById(R.id.return_button);
-        returnButton.setVisibility(View.GONE);
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -159,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
      */
     private void setDeleteButtonListener(){
         deleteButton = findViewById(R.id.delete_button);
-        deleteButton.setVisibility(View.GONE);
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -444,14 +455,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     @Override
     public void changeMode(Boolean toDeleteMode){
         if(toDeleteMode){
-            backgroundSwitch.setVisibility(View.GONE);
-            returnButton.setVisibility(View.VISIBLE);
-            deleteButton.setVisibility(View.VISIBLE);
+            toolbarNormalLayout.setVisibility(View.GONE);
+            toolbarDeleteLayout.setVisibility(View.VISIBLE);
         }
         else{
-            backgroundSwitch.setVisibility(View.VISIBLE);
-            returnButton.setVisibility(View.GONE);
-            deleteButton.setVisibility(View.GONE);
+            toolbarDeleteLayout.setVisibility(View.GONE);
+            toolbarNormalLayout.setVisibility(View.VISIBLE);
         }
     }
 
