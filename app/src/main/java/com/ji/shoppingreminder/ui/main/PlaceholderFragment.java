@@ -49,7 +49,7 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         List<String> getDBContents(int index);
         Boolean searchItem(String item);
         void changeMode(Boolean toDeleteMode);
-        void chooseDeleteItem(String items);
+        Boolean chooseDeleteItem(String items);
     }
 
     public static PlaceholderFragment newInstance(int index) {
@@ -90,12 +90,9 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         //タブに対応するデータベース内のアイテムを表示する
         recyclerView = root.findViewById(R.id.recycler_view);
         setList(dBmanager.getDBContents(getArguments().getInt(ARG_SECTION_NUMBER) - 1));
-        viewAdapter = new ViewAdapter(itemList, notificationList,  this);
-//        RecyclerView.ItemDecoration itemDecoration =
-//                new DividerItemDecoration(getContext(), DividerItemDecoration.VERTICAL);
-//        recyclerView.addItemDecoration(itemDecoration);
+//        viewAdapter = new ViewAdapter(itemList, notificationList,  this);
         recyclerView.setLayoutManager(new LinearLayoutManager(root.getContext()));
-        recyclerView.setAdapter(viewAdapter);
+        createRecyclerView();
 
         //pageview内の何も表示されていないところをタップしたらキーボードを閉じる
         root.setOnTouchListener(new View.OnTouchListener() {
@@ -110,6 +107,10 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         return root;
     }
 
+    public void createRecyclerView(){
+        viewAdapter = new ViewAdapter(itemList, notificationList,  this);
+        recyclerView.setAdapter(viewAdapter);
+    }
     /**
      * itemListとnotificationListを更新する
      * @param list
@@ -145,7 +146,7 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
     }
 
     @Override
-    public void chooseDeleteItem(String item){
-        dBmanager.chooseDeleteItem(item);
+    public Boolean chooseDeleteItem(String item){
+       return dBmanager.chooseDeleteItem(item);
     }
 }

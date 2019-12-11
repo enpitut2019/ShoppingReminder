@@ -5,6 +5,7 @@ import com.ji.shoppingreminder.database.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -48,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
     private int currentPage;
     private EditText editText;
+    private ConstraintLayout registerLayout;
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
     private Switch backgroundSwitch;
@@ -84,6 +86,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         editText = findViewById(R.id.edit_text);
+        registerLayout = findViewById(R.id.ConstraintLayout);
 
         InitializeDB();
         setViewListener(viewPager);
@@ -150,6 +153,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 ContentValues values = new ContentValues();
                 values.put("deleteid", 0);
                 db.update("requisitedb", values, "deleteid = 1", null);
+                ((PlaceholderFragment)fragment).createRecyclerView();
             }
         });
     }
@@ -168,6 +172,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 changeMode(false);
                 Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
                 ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
+                ((PlaceholderFragment)fragment).createRecyclerView();
             }
         });
     }
@@ -424,10 +429,30 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
      * @param item
      */
     @Override
-    public void chooseDeleteItem(String item){
+    public Boolean chooseDeleteItem(String item){
         ContentValues values = new ContentValues();
-        values.put("deleteid", 1);
-        db.update("requisitedb", values, "name = ?", new String[]{item});
+        Cursor cursor = db.query(
+                "requisitedb",
+                new String[] {"deleteid"},
+                "name = ?",
+                new String[]{item},
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+        Log.d("test", cursor.getString(0));
+        int deleteid = cursor.getInt(0);
+        cursor.close();
+        if(deleteid == 1){
+            values.put("deleteid", 0);
+            db.update("requisitedb", values, "name = ?", new String[]{item});
+            return false;
+        }else{
+            values.put("deleteid", 1);
+            db.update("requisitedb", values, "name = ?", new String[]{item});
+            return true;
+        }
     }
 
     /**
@@ -447,11 +472,13 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             backgroundSwitch.setVisibility(View.GONE);
             returnButton.setVisibility(View.VISIBLE);
             deleteButton.setVisibility(View.VISIBLE);
+            registerLayout.setVisibility(View.GONE);
         }
         else{
             backgroundSwitch.setVisibility(View.VISIBLE);
             returnButton.setVisibility(View.GONE);
             deleteButton.setVisibility(View.GONE);
+            registerLayout.setVisibility(View.VISIBLE);
         }
     }
 
