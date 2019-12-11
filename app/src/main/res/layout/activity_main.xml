@@ -20,52 +20,77 @@
         <androidx.appcompat.widget.Toolbar
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:minHeight="56dp"
             app:layout_scrollFlags="scroll|enterAlways">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-                <Switch
-                    android:id="@+id/background_switch"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:showText="false"
-                    android:text="GPS"
-                    android:textSize="18sp"
-                    tools:layout_editor_absoluteY="5dp"
-                    tools:visibility="gone" />
+                <LinearLayout
+                    android:id="@+id/ToolBarLinearLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal"
+                    android:visibility="visible">
 
-                <Button
-                    android:id="@+id/return_button"
-                    android:layout_width="46dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:background="?attr/actionModeCloseDrawable"
-                    android:foreground="?attr/actionModeCloseDrawable"
-                    android:foregroundTint="@android:color/darker_gray"
-                    tools:visibility="visible" />
+                    <Switch
+                        android:id="@+id/background_switch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="top"
+                        android:showText="false"
+                        android:text="GPS"
+                        android:textSize="18sp"
+                        tools:layout_editor_absoluteY="5dp"
+                        tools:visibility="visible" />
 
-                <TextView
-                    android:layout_width="247dp"
-                    android:layout_height="1dp"
-                    android:layout_weight="1" />
+                </LinearLayout>
 
-                <Button
-                    android:id="@+id/delete_button"
-                    android:layout_width="52dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="top|right"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginBottom="3dp"
-                    android:background="@android:drawable/ic_menu_delete"
-                    android:foreground="@android:drawable/ic_menu_delete"
-                    android:foregroundTint="@android:color/darker_gray"
-                    tools:visibility="visible" />
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/ToolBarConstraintLayout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone">
+
+                    <Button
+                        android:id="@+id/return_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:background="?attr/actionModeCloseDrawable"
+                        android:backgroundTint="@android:color/background_light"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/textView"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/textView"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="@color/quantum_white_text"
+                        android:textSize="24sp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toStartOf="@+id/delete_button"
+                        app:layout_constraintStart_toEndOf="@+id/return_button"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <Button
+                        android:id="@+id/delete_button"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:layout_marginEnd="16dp"
+                        android:background="@drawable/ic_delete_white_24dp"
+                        android:backgroundTint="@android:color/background_light"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toEndOf="@+id/textView"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </LinearLayout>
 
         </androidx.appcompat.widget.Toolbar>
