@@ -268,7 +268,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if (requestCode == REQUEST_PERMISSION) {
             // 使用が許可された
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startService();
             } else {
                 // それでも拒否された時の対応
                 toastMake("位置情報を許可しないと施設の情報を取得できません", 0, 200);
