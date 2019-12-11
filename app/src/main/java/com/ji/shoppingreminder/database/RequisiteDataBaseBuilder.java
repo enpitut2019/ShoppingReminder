@@ -14,13 +14,15 @@ public class RequisiteDataBaseBuilder extends SQLiteOpenHelper {
     private static final String TABLE_NAME = "requisitedb";
     private static final String COLUMN_NAME_TITLE = "name";
     private static final String COLUMN_NAME_SUBTITLE = "category";
-    private static final String CULUMN_NAME_NOTIFICATION = "notification";
+    private static final String COLUMN_NAME_NOTIFICATION = "notification";
+    private static final String COLUMN_NAME_DELETE = "deleteid";
 
     private static final String SQL_CREATE_ENTRIES =
             "CREATE TABLE " + TABLE_NAME + " (" +
                     COLUMN_NAME_TITLE + " TEXT," +
                     COLUMN_NAME_SUBTITLE + " TEXT," +
-                    CULUMN_NAME_NOTIFICATION + " INTEGER)";
+                    COLUMN_NAME_NOTIFICATION + " INTEGER," +
+                    COLUMN_NAME_DELETE + " INTEGER)";
 
     private static final String SQL_DELETE_ENTRIES =
             "DROP TABLE IF EXISTS " + TABLE_NAME;

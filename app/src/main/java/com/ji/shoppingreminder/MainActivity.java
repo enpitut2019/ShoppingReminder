@@ -35,6 +35,7 @@ import android.util.Log;
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 import com.ji.shoppingreminder.ui.main.PlaceholderFragment;
 import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
+import com.ji.shoppingreminder.ui.main.ViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private LocationManager locationManager;
     private InputMethodManager inputMethodManager;
     private SectionsPagerAdapter sectionsPagerAdapter;
+    private ViewAdapter viewAdapter;
+    private PlaceholderFragment placeholderFragment;
 
     /**
      * APIの確認とレシーバーの作成
@@ -144,6 +147,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             @Override
             public void onClick(View v) {
                 changeMode(false);
+                viewAdapter = new ViewAdapter();
+                viewAdapter.changeBooleanMode();
             }
         });
     }
@@ -157,8 +162,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-
+                Log.d("test", "削除ボタン");
+                deleteItemss();
             }
         });
     }
@@ -326,6 +331,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             values.put("name", item);
             values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
             values.put("notification", 1);
+            values.put("deleteid",0);
 
             db.insert("requisitedb", null, values);
         } else {
@@ -394,6 +400,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         cursor.moveToFirst();
         Log.d("test", cursor.getString(0));
         int notification = cursor.getInt(0);
+        cursor.close();
         //通知できないように変更
         if(notification == 1){
             changeItemState(item, 0);
@@ -412,6 +419,25 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     public void deleteItem(String item){
         db = requisiteDBBuilder.getReadableDatabase();
         db.delete("requisitedb","name = ?", new String[]{item});
+    }
+
+    @Override
+    public void deleteItems(String item){
+        ContentValues values = new ContentValues();
+        values.put("deleteid", 1);
+        db.update("requisitedb", values, "name = ?", new String[]{item});
+        Log.d("debug","**********aaaaaaa");
+    }
+
+    @Override
+    public void deleteItemss(){
+        Log.d("test", "デリート");
+        db = requisiteDBBuilder.getReadableDatabase();
+        db.delete("requisitedb","deleteid = 1",null);
+        Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+        ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
+        ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+
     }
 
     @Override

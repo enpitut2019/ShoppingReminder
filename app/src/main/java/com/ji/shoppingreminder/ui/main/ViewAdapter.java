@@ -19,12 +19,19 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     private List<String> items;
     private List<Integer> notificationList;
     private ListViewManager listViewManager;
+    private static boolean mode;
+
+    public ViewAdapter() {
+
+    }
 
     //親フラグメントのメソッドを呼び出すためのインターフェース
     public interface ListViewManager{
         void searchItem(String item);
         void deleteItem(String item);
         void changeMode(Boolean toDeleteMode);
+        void deleteItems(String items);
+        void deleteItemss();
     }
 
     public ViewAdapter(List<String> data,List<Integer> notificationList, ListViewManager listviewManager) {
@@ -38,6 +45,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //新しいviewの生成
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        mode = false;
         return new ViewHolder(view);
     }
 
@@ -60,8 +68,24 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
             @Override
             public boolean onLongClick(View view) {
                 //listViewManager.deleteItem(item);
-                listViewManager.changeMode(true);
-                return false;
+                if(!mode){
+                    listViewManager.changeMode(true);
+                    changeBooleanMode();
+                    return true;
+                } else {
+                    Log.d("test","delete");
+//                    listViewManager.deleteItems(item);
+                    return false;
+                }
+            }
+        });
+        holder.view.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(mode){
+                    Log.d("test","tap");
+                    listViewManager.deleteItems(item);
+                }
             }
         });
     }
@@ -84,6 +108,14 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
             itemText = (TextView) v.findViewById(R.id.item_text);
             checkBox = (CheckBox) v.findViewById(R.id.check_box);
             view = v;
+        }
+    }
+
+    public void changeBooleanMode(){
+        if (mode){
+            mode = false;
+        } else {
+            mode = true;
         }
     }
 }

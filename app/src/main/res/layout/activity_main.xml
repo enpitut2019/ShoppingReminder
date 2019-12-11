@@ -40,28 +40,31 @@
 
                 <Button
                     android:id="@+id/return_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="46dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="戻る"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="?attr/actionModeCloseDrawable"
+                    android:foreground="?attr/actionModeCloseDrawable"
+                    android:foregroundTint="@android:color/darker_gray"
                     tools:visibility="visible" />
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="247dp"
                     android:layout_height="1dp"
-                    android:layout_weight="1"
-                    />
+                    android:layout_weight="1" />
 
                 <Button
                     android:id="@+id/delete_button"
-                    android:layout_width="wrap_content"
+                    android:layout_width="52dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top|right"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="10dp"
-                    android:text="削除"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginBottom="3dp"
+                    android:background="@android:drawable/ic_menu_delete"
+                    android:foreground="@android:drawable/ic_menu_delete"
+                    android:foregroundTint="@android:color/darker_gray"
                     tools:visibility="visible" />
             </LinearLayout>
 
@@ -84,6 +87,7 @@
         app:layout_behavior="@string/appbar_scrolling_view_behavior"
         app:layout_constraintBottom_toTopOf="@id/ConstraintLayout"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/appbar">
 
