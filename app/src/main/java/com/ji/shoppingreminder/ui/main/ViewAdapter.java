@@ -3,6 +3,7 @@ package com.ji.shoppingreminder.ui.main;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.annotation.NonNull;
 
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +27,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     public interface ListViewManager{
         void searchItem(String item);
         void changeMode(Boolean toDeleteMode);
-        void chooseDeleteItem(String items);
+        Boolean chooseDeleteItem(String items);
     }
 
     public ViewAdapter(List<String> data,List<Integer> notificationList, ListViewManager listviewManager) {
@@ -74,7 +75,11 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
             @Override
             public void onClick(View view) {
                 if(deleteMode){
-                    listViewManager.chooseDeleteItem(item);
+                    if(listViewManager.chooseDeleteItem(item)){
+                        view.setBackgroundColor(Color.GRAY);
+                    }else{
+                        view.setBackgroundColor(Color.WHITE);
+                    }
                 }
             }
         });
