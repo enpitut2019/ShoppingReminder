@@ -19,19 +19,14 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     private List<String> items;
     private List<Integer> notificationList;
     private ListViewManager listViewManager;
-    private static boolean mode;
+    private boolean deleteMode;
 
-    public ViewAdapter() {
-
-    }
 
     //親フラグメントのメソッドを呼び出すためのインターフェース
     public interface ListViewManager{
         void searchItem(String item);
-        void deleteItem(String item);
         void changeMode(Boolean toDeleteMode);
-        void deleteItems(String items);
-        void deleteItemss();
+        void chooseDeleteItem(String items);
     }
 
     public ViewAdapter(List<String> data,List<Integer> notificationList, ListViewManager listviewManager) {
@@ -45,7 +40,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //新しいviewの生成
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
-        mode = false;
+        deleteMode = false;
         return new ViewHolder(view);
     }
 
@@ -67,24 +62,19 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
         holder.view.setOnLongClickListener(new View.OnLongClickListener(){
             @Override
             public boolean onLongClick(View view) {
-                //listViewManager.deleteItem(item);
-                if(!mode){
+                if(!deleteMode){
                     listViewManager.changeMode(true);
                     changeBooleanMode();
                     return true;
-                } else {
-                    Log.d("test","delete");
-//                    listViewManager.deleteItems(item);
-                    return false;
                 }
+                return false;
             }
         });
         holder.view.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(mode){
-                    Log.d("test","tap");
-                    listViewManager.deleteItems(item);
+                if(deleteMode){
+                    listViewManager.chooseDeleteItem(item);
                 }
             }
         });
@@ -112,10 +102,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     }
 
     public void changeBooleanMode(){
-        if (mode){
-            mode = false;
-        } else {
-            mode = true;
-        }
+        deleteMode = !deleteMode;
     }
 }
