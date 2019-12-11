@@ -33,7 +33,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="horizontal"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <Switch
                         android:id="@+id/background_switch"
@@ -52,7 +52,7 @@
                     android:id="@+id/toolbarDeleteLayout"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="visible">
+                    android:visibility="gone">
 
                     <Button
                         android:id="@+id/return_button"
