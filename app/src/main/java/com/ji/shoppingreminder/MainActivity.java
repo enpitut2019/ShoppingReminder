@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private final int REQUEST_PERMISSION = 1000;
 
     private int currentPage;
+    private int deleteCount;
     private EditText editText;
     private ConstraintLayout registerLayout;
     private RequisiteDataBaseBuilder requisiteDBBuilder;
@@ -60,6 +61,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private LinearLayout toolbarNormalLayout;
     //削除モードのLayout
     private ConstraintLayout toolbarDeleteLayout;
+    private TextView deleteCountText;
 
     private Button returnButton;
     private Button deleteButton;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         currentPage = 0;
+        deleteCount = 0;
         //タブレイアウトの初期化
         sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
@@ -86,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         toolbarNormalLayout = findViewById(R.id.toolbarNormalLayout);
         toolbarDeleteLayout = findViewById(R.id.toolbarDeleteLayout);
+        deleteCountText = findViewById(R.id.textView);
 
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
@@ -444,8 +448,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         Cursor cursor = db.query(
                 "requisitedb",
                 new String[] {"deleteid"},
-                "name = ?",
-                new String[]{item},
+                "name = ? AND category = ?",
+                new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()},
                 null,
                 null,
                 null
@@ -455,11 +459,17 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         cursor.close();
         if(deleteid == 1){
             values.put("deleteid", 0);
-            db.update("requisitedb", values, "name = ?", new String[]{item});
+            db.update("requisitedb", values, "name = ? AND category = ?",
+                    new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
+            deleteCount--;
+            deleteCountText.setText(deleteCount + "件選択中");
             return false;
         }else{
             values.put("deleteid", 1);
-            db.update("requisitedb", values, "name = ?", new String[]{item});
+            db.update("requisitedb", values, "name = ? AND category = ?",
+                    new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
+            deleteCount++;
+            deleteCountText.setText(deleteCount + "件選択中");
             return true;
         }
     }
@@ -482,6 +492,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             toolbarDeleteLayout.setVisibility(View.VISIBLE);
 
             registerLayout.setVisibility(View.GONE);
+            deleteCount = 0;
+            deleteCountText.setText(deleteCount + "件選択中");
         }
         else{
             toolbarDeleteLayout.setVisibility(View.GONE);
