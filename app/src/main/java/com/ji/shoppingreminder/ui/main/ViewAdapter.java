@@ -64,7 +64,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
             @Override
             public boolean onLongClick(View view) {
                 if(!deleteMode){
-                    listViewManager.changeMode(true);
                     changeBooleanMode();
                     return true;
                 }
@@ -108,5 +107,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
 
     public void changeBooleanMode(){
         deleteMode = !deleteMode;
+        listViewManager.changeMode(deleteMode);
     }
 }

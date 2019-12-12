@@ -9,10 +9,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 
-import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +20,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.ji.shoppingreminder.R;
+import com.ji.shoppingreminder.ui.main.ViewAdapter.ViewHolder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -143,6 +141,10 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
     @Override
     public void changeMode(Boolean toDeleteMode){
         dBmanager.changeMode(toDeleteMode);
+        for(int i  = 0; i < itemList.size(); i++){
+            ViewHolder holder = (ViewHolder)recyclerView.findViewHolderForLayoutPosition(i);
+            holder.checkBox.setEnabled(!toDeleteMode);
+        }
     }
 
     @Override

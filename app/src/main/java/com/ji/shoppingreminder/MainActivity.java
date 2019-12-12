@@ -144,7 +144,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                     currentPage = viewPager.getCurrentItem();
                     //EditTextのヒントを変更する
                     changeEditTextHint();
-                    Log.d("test", String.valueOf(currentPage));
                 }
             }
         });
@@ -158,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         returnButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                changeMode(false);
+                //changeMode(false);
                 Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
                 ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
                 ContentValues values = new ContentValues();
@@ -177,9 +176,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         deleteButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d("test", "削除ボタン");
                 deleteItems();
-                changeMode(false);
                 Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
                 ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
                 ((PlaceholderFragment)fragment).createRecyclerView();
@@ -416,7 +413,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         );
 
         cursor.moveToFirst();
-        Log.d("test", cursor.getString(0));
         int notification = cursor.getInt(0);
         cursor.close();
         //通知できないように変更
@@ -450,7 +446,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 null
         );
         cursor.moveToFirst();
-        Log.d("test", cursor.getString(0));
         int deleteid = cursor.getInt(0);
         cursor.close();
         if(deleteid == 1){
