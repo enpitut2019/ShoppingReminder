@@ -140,6 +140,14 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             @Override
             public void onPageScrollStateChanged(int state) {
                 if(state == ViewPager.SCROLL_STATE_SETTLING) {
+                    if(toolbarDeleteLayout.getVisibility() == View.VISIBLE){
+                        Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                        ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
+                        ContentValues values = new ContentValues();
+                        values.put("deleteid", 0);
+                        db.update("requisitedb", values, "deleteid = 1", null);
+                        ((PlaceholderFragment)fragment).createRecyclerView();
+                    }
                     //現在のページ数を更新する
                     currentPage = viewPager.getCurrentItem();
                     //EditTextのヒントを変更する
@@ -160,9 +168,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 //changeMode(false);
                 Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
                 ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
-                ContentValues values = new ContentValues();
-                values.put("deleteid", 0);
-                db.update("requisitedb", values, "deleteid = 1", null);
                 ((PlaceholderFragment)fragment).createRecyclerView();
             }
         });
