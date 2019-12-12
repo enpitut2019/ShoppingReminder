@@ -201,6 +201,10 @@ public class LocationService extends Service implements LocationListener{
         // Notification　Channel 設定
         NotificationChannel channel = new NotificationChannel(
                 channelId, "リストと店舗の通知" , NotificationManager.IMPORTANCE_DEFAULT);
+        channel.enableVibration(true);
+        //バイブレーションのパターンを設定
+        //new long[]{delay, play, sleep, play, sleep, ...}
+        channel.setVibrationPattern(new long[]{0, 300, 300, 400});
         //通知をタップしたときに開くアクティビティー
         Intent  mainIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);

@@ -5,6 +5,7 @@ import com.ji.shoppingreminder.database.*;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -24,6 +25,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Button;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ import android.util.Log;
 import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 import com.ji.shoppingreminder.ui.main.PlaceholderFragment;
 import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
+import com.ji.shoppingreminder.ui.main.ViewAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +49,23 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private final int REQUEST_PERMISSION = 1000;
 
     private int currentPage;
+    private int deleteCount;
     private EditText editText;
+    private ConstraintLayout registerLayout;
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
+
     private Switch backgroundSwitch;
+
+    //通常モードのLayout
+    private LinearLayout toolbarNormalLayout;
+    //削除モードのLayout
+    private ConstraintLayout toolbarDeleteLayout;
+    private TextView deleteCountText;
+
+    private Button returnButton;
+    private Button deleteButton;
+
     private LocationManager locationManager;
     private InputMethodManager inputMethodManager;
     private SectionsPagerAdapter sectionsPagerAdapter;
@@ -63,12 +79,17 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         currentPage = 0;
+        deleteCount = 0;
         //タブレイアウトの初期化
         sectionsPagerAdapter = new SectionsPagerAdapter(this, getSupportFragmentManager());
         ViewPager viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
+
+        toolbarNormalLayout = findViewById(R.id.toolbarNormalLayout);
+        toolbarDeleteLayout = findViewById(R.id.toolbarDeleteLayout);
+        deleteCountText = findViewById(R.id.textView);
 
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
@@ -81,9 +102,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         inputMethodManager = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
         editText = findViewById(R.id.edit_text);
+        registerLayout = findViewById(R.id.ConstraintLayout);
 
         InitializeDB();
         setViewListener(viewPager);
+        setReturnButtonListener();
+        setDeleteButtonListener();
         setAddButtonListener();
         changeEditTextHint();
     }
@@ -120,12 +144,51 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             @Override
             public void onPageScrollStateChanged(int state) {
                 if(state == ViewPager.SCROLL_STATE_SETTLING) {
+                    if(toolbarDeleteLayout.getVisibility() == View.VISIBLE){
+                        Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                        ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
+                        ContentValues values = new ContentValues();
+                        values.put("deleteid", 0);
+                        db.update("requisitedb", values, "deleteid = 1", null);
+                        ((PlaceholderFragment)fragment).createRecyclerView();
+                    }
                     //現在のページ数を更新する
                     currentPage = viewPager.getCurrentItem();
                     //EditTextのヒントを変更する
                     changeEditTextHint();
-                    Log.d("test", String.valueOf(currentPage));
                 }
+            }
+        });
+    }
+
+    /**
+     * 戻るボタンを押したときの処理
+     */
+    private void setReturnButtonListener(){
+        returnButton = findViewById(R.id.return_button);
+        returnButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //changeMode(false);
+                Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
+                ((PlaceholderFragment)fragment).createRecyclerView();
+            }
+        });
+    }
+
+    /**
+     * 削除ボタンを押したときの処理
+     */
+    private void setDeleteButtonListener(){
+        deleteButton = findViewById(R.id.delete_button);
+        deleteButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                deleteItems();
+                Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
+                ((PlaceholderFragment)fragment).createRecyclerView();
             }
         });
     }
@@ -211,7 +274,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if (requestCode == REQUEST_PERMISSION) {
             // 使用が許可された
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                startService();
             } else {
                 // それでも拒否された時の対応
                 toastMake("位置情報を許可しないと施設の情報を取得できません", 0, 200);
@@ -279,8 +341,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         Cursor cursor = db.query(
                 "requisitedb",
                 new String[] {"notification"},
-                "name = ?",
-                new String[]{item},
+                "name = ? AND category = ?",
+                new String[]{item, sectionsPagerAdapter.getPageTitle(index).toString()},
                 null,
                 null,
                 null
@@ -293,6 +355,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             values.put("name", item);
             values.put("category", sectionsPagerAdapter.getPageTitle(index).toString());
             values.put("notification", 1);
+            values.put("deleteid",0);
 
             db.insert("requisitedb", null, values);
         } else {
@@ -359,8 +422,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         );
 
         cursor.moveToFirst();
-        Log.d("test", cursor.getString(0));
         int notification = cursor.getInt(0);
+        cursor.close();
         //通知できないように変更
         if(notification == 1){
             changeItemState(item, 0);
@@ -375,10 +438,69 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         }
     }
 
+    /**
+     * 選択したアイテムを削除するように設定する
+     * @param item
+     */
     @Override
-    public void deleteItem(String item){
+    public Boolean chooseDeleteItem(String item){
+        ContentValues values = new ContentValues();
+        Cursor cursor = db.query(
+                "requisitedb",
+                new String[] {"deleteid"},
+                "name = ? AND category = ?",
+                new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()},
+                null,
+                null,
+                null
+        );
+        cursor.moveToFirst();
+        int deleteid = cursor.getInt(0);
+        cursor.close();
+        if(deleteid == 1){
+            values.put("deleteid", 0);
+            db.update("requisitedb", values, "name = ? AND category = ?",
+                    new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
+            deleteCount--;
+            deleteCountText.setText(deleteCount + "件選択中");
+            return false;
+        }else{
+            values.put("deleteid", 1);
+            db.update("requisitedb", values, "name = ? AND category = ?",
+                    new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
+            deleteCount++;
+            deleteCountText.setText(deleteCount + "件選択中");
+            return true;
+        }
+    }
+
+    /**
+     * データベースから選択したアイテムを削除する
+     */
+    public void deleteItems(){
         db = requisiteDBBuilder.getReadableDatabase();
-        db.delete("requisitedb","name = ?", new String[]{item});
+        db.delete("requisitedb","deleteid = 1",null);
+        Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+        ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
+        ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void changeMode(Boolean toDeleteMode){
+        if(toDeleteMode){
+            toolbarNormalLayout.setVisibility(View.GONE);
+            toolbarDeleteLayout.setVisibility(View.VISIBLE);
+
+            registerLayout.setVisibility(View.GONE);
+            deleteCount = 0;
+            deleteCountText.setText(deleteCount + "件選択中");
+        }
+        else{
+            toolbarDeleteLayout.setVisibility(View.GONE);
+            toolbarNormalLayout.setVisibility(View.VISIBLE);
+
+            registerLayout.setVisibility(View.VISIBLE);
+        }
     }
 
     /**
