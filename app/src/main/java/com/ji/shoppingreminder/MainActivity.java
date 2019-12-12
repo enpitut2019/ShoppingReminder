@@ -332,8 +332,8 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         Cursor cursor = db.query(
                 "requisitedb",
                 new String[] {"notification"},
-                "name = ?",
-                new String[]{item},
+                "name = ? AND category = ?",
+                new String[]{item, sectionsPagerAdapter.getPageTitle(index).toString()},
                 null,
                 null,
                 null
