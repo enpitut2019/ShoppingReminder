@@ -20,7 +20,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     private List<String> items;
     private List<Integer> notificationList;
     private ListViewManager listViewManager;
-    private boolean deleteMode = false;
+    private boolean deleteMode;
 
 
     //親フラグメントのメソッドを呼び出すためのインターフェース
@@ -41,6 +41,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     public ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         //新しいviewの生成
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.list_item, parent, false);
+        deleteMode = false;
         return new ViewHolder(view);
     }
 
@@ -102,11 +103,6 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
             checkBox = (CheckBox) v.findViewById(R.id.check_box);
             view = v;
         }
-    }
-
-    @Override
-    public void onViewAttachedToWindow(ViewHolder holder) {
-        holder.checkBox.setEnabled(!deleteMode);
     }
 
     public void changeBooleanMode(){

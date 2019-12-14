@@ -143,9 +143,7 @@ public class PlaceholderFragment extends Fragment implements ViewAdapter.ListVie
         dBmanager.changeMode(toDeleteMode);
         for(int i  = 0; i < itemList.size(); i++){
             ViewHolder holder = (ViewHolder)recyclerView.findViewHolderForLayoutPosition(i);
-            if (holder != null){
-                holder.checkBox.setEnabled(!toDeleteMode);
-            }
+            holder.checkBox.setEnabled(!toDeleteMode);
         }
     }
 
