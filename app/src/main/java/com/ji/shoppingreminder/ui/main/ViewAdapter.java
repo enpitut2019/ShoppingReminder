@@ -20,7 +20,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     private List<String> items;
     private List<Integer> notificationList;
     private ListViewManager listViewManager;
-    private boolean deleteMode = false;
+    private boolean deleteMode;
 
 
     //親フラグメントのメソッドを呼び出すためのインターフェース
