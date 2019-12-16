@@ -147,7 +147,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                     if(toolbarDeleteLayout.getVisibility() == View.VISIBLE){
                         Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
                         ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
-                        resetDeleteID();
                         ((PlaceholderFragment)fragment).createRecyclerView();
                     }
                     //現在のページ数を更新する
@@ -168,7 +167,6 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             @Override
             public void onClick(View v) {
                 //changeMode(false);
-                resetDeleteID();
                 Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
                 ((PlaceholderFragment)fragment).viewAdapter.changeBooleanMode();
                 ((PlaceholderFragment)fragment).createRecyclerView();
@@ -501,6 +499,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             deleteCountText.setText(deleteCount + "件選択中");
         }
         else{
+            resetDeleteID();
             toolbarDeleteLayout.setVisibility(View.GONE);
             toolbarNormalLayout.setVisibility(View.VISIBLE);
 
