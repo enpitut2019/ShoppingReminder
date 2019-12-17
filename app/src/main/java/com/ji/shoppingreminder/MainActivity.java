@@ -10,6 +10,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.Toolbar;
 
 import android.Manifest;
 import android.app.ActivityManager;
@@ -17,6 +18,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.location.LocationManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     //削除モードのLayout
     private ConstraintLayout toolbarDeleteLayout;
     private TextView deleteCountText;
+    private Toolbar toolbar;
 
     private Button returnButton;
     private Button deleteButton;
@@ -88,6 +91,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
 
+        toolbar = findViewById(R.id.toolbar);
         toolbarNormalLayout = findViewById(R.id.toolbarNormalLayout);
         toolbarDeleteLayout = findViewById(R.id.toolbarDeleteLayout);
         deleteCountText = findViewById(R.id.textView);
@@ -111,6 +115,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         setDeleteButtonListener();
         setAddButtonListener();
         changeEditTextHint();
+        resetDeleteID();
     }
 
     @Override
@@ -503,6 +508,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             registerLayout.setVisibility(View.GONE);
             deleteCount = 0;
             deleteCountText.setText(deleteCount + "件選択中");
+            toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
         }
         else{
             resetDeleteID();
@@ -510,6 +516,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             toolbarNormalLayout.setVisibility(View.VISIBLE);
 
             registerLayout.setVisibility(View.VISIBLE);
+            toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimary));
         }
     }
 
