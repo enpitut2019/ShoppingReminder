@@ -18,6 +18,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.view.Gravity;
@@ -323,7 +324,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private void startService(){
         Intent intent = new Intent(getApplication(), LocationService.class);
         // API 26 以降
-        startForegroundService(intent);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            startForegroundService(intent);
+        }
+        else {
+            startService(intent);
+        }
         backgroundSwitch.setChecked(true);
     }
 
