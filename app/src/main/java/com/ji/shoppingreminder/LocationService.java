@@ -71,40 +71,53 @@ public class LocationService extends Service implements LocationListener{
         PendingIntent pendingIntent =
                 PendingIntent.getActivity(context, requestCode,
                         this.intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        //API26以上
+        if(Build.VERSION.SDK_INT >= 26){
 
-        // ForegroundにするためNotificationが必要、Contextを設定
-        notificationManager =
-                (NotificationManager)context.
-                        getSystemService(Context.NOTIFICATION_SERVICE);
+            // ForegroundにするためNotificationが必要、Contextを設定
+            notificationManager =
+                    (NotificationManager)context.
+                            getSystemService(Context.NOTIFICATION_SERVICE);
 
-        // Notification　Channel 設定
-        NotificationChannel channel = new NotificationChannel(
-                channelId, "GPSの起動を通知" , NotificationManager.IMPORTANCE_DEFAULT);
-        channel.setDescription("Silent Notification");
-        // 通知音を消さないと毎回通知音が出てしまう
-        // この辺りの設定はcleanにしてから変更
-        channel.setSound(null,null);
-        // 通知ランプを消す
-        channel.enableLights(false);
-        channel.setLightColor(Color.BLUE);
-        // 通知バイブレーション無し
-        channel.enableVibration(false);
+            // Notification　Channel 設定
+            NotificationChannel channel = new NotificationChannel(
+                    channelId, "GPSの起動を通知" , NotificationManager.IMPORTANCE_DEFAULT);
+            channel.setDescription("Silent Notification");
+            // 通知音を消さないと毎回通知音が出てしまう
+            // この辺りの設定はcleanにしてから変更
+            channel.setSound(null,null);
+            // 通知ランプを消す
+            channel.enableLights(false);
+            channel.setLightColor(Color.BLUE);
+            // 通知バイブレーション無し
+            channel.enableVibration(false);
 
-        if(notificationManager != null) {
-            notificationManager.createNotificationChannel(channel);
-            Notification notification = new Notification.Builder(context, channelId)
-                    .setContentTitle("GPS作動中です")
-                    // アイコン設定
-                    .setSmallIcon(R.drawable.ic_stat_name)
-                    .setAutoCancel(true)
-                    .setContentIntent(pendingIntent)
-                    .setWhen(System.currentTimeMillis())
-                    .build();
+            if(notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+                Notification notification = new Notification.Builder(context, channelId)
+                        .setContentTitle("GPS作動中です")
+                        // アイコン設定
+                        .setSmallIcon(R.drawable.ic_stat_name)
+                        .setAutoCancel(true)
+                        .setContentIntent(pendingIntent)
+                        .setWhen(System.currentTimeMillis())
+                        .build();
 
-            // startForeground
-            startForeground(1, notification);
+                // startForeground
+                startForeground(1, notification);
+            }
         }
+        //API26以前
+        else{
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setContentTitle("GPS作動中です")
+                    .setContentText("")
+                    .setAutoCancel(true)
+                    .setContentIntent(pendingIntent);
 
+            startForeground(1, notificationBuilder.build());
+        }
         startGPS();
 
         return START_NOT_STICKY;
@@ -116,6 +129,7 @@ public class LocationService extends Service implements LocationListener{
     protected void startGPS() {
         if (locationManager != null) {
             try {
+                Log.d("test", "startGPS");
                 if (ActivityCompat.checkSelfPermission(this,
                         Manifest.permission.ACCESS_FINE_LOCATION)!=
                         PackageManager.PERMISSION_GRANTED) {
@@ -127,6 +141,7 @@ public class LocationService extends Service implements LocationListener{
                 locationManager.requestLocationUpdates(LocationManager.NETWORK_PROVIDER,
                         MinTime, MinDistance, this);
             } catch (Exception e) {
+                Log.d("test", "cannot start GPS");
                 e.printStackTrace();
             }
         } else {
@@ -140,7 +155,7 @@ public class LocationService extends Service implements LocationListener{
      */
     @Override
     public void onLocationChanged(Location location) {
-
+        Log.d("test", "getLocation");
         StringBuilder strBuf = new StringBuilder();
 
         strBuf.append("----------\n");
@@ -160,12 +175,12 @@ public class LocationService extends Service implements LocationListener{
         str = "Altitude = " + String.valueOf(location.getAltitude()) + "\n";
         strBuf.append(str);
 
-        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd HH:mm:ss");
-        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
-        String currentTime = sdf.format(location.getTime());
+//        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd HH:mm:ss");
+//        sdf.setTimeZone(TimeZone.getTimeZone("Asia/Tokyo"));
+//        String currentTime = sdf.format(location.getTime());
 
-        str = "Time = " + currentTime + "\n";
-        strBuf.append(str);
+//        str = "Time = " + currentTime + "\n";
+//        strBuf.append(str);
 
         str = "Speed = " + String.valueOf(location.getSpeed()) + "\n";
         strBuf.append(str);
@@ -198,39 +213,49 @@ public class LocationService extends Service implements LocationListener{
         }
 
         String channelId = "default";
-        // Notification　Channel 設定
-        NotificationChannel channel = new NotificationChannel(
-                channelId, "リストと店舗の通知" , NotificationManager.IMPORTANCE_DEFAULT);
-        channel.enableVibration(true);
-        //バイブレーションのパターンを設定
-        //new long[]{delay, play, sleep, play, sleep, ...}
-        channel.setVibrationPattern(new long[]{0, 300, 300, 400});
         //通知をタップしたときに開くアクティビティー
         Intent  mainIntent = new Intent(context, MainActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(context, 1, mainIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         int notificationId = index;
+        //API26以上
+        if(Build.VERSION.SDK_INT >= 26){
 
-        Log.d("test", "notification");
-        Log.d("test", storeList);
-        if(notificationManager != null) {
-            notificationManager.createNotificationChannel(channel);
-            Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle()
-                    .setBigContentTitle(requisiteList)
-                    .bigText(storeList);
-            Notification notification = new Notification.Builder(context, channelId)
+            // Notification　Channel 設定
+            NotificationChannel channel = new NotificationChannel(
+                    channelId, "リストと店舗の通知" , NotificationManager.IMPORTANCE_DEFAULT);
+            channel.enableVibration(true);
+            //バイブレーションのパターンを設定
+            //new long[]{delay, play, sleep, play, sleep, ...}
+            channel.setVibrationPattern(new long[]{0, 300, 300, 400});
+            if(notificationManager != null) {
+                notificationManager.createNotificationChannel(channel);
+                Notification.BigTextStyle bigTextStyle = new Notification.BigTextStyle()
+                        .setBigContentTitle(requisiteList)
+                        .bigText(storeList);
+                Notification notification = new Notification.Builder(context, channelId)
+                        .setContentTitle(requisiteList)
+                        .setContentText(storeList)
+                        // アイコン設定
+                        .setSmallIcon(R.drawable.ic_stat_name)
+                        .setLargeIcon(icon)
+                        .setAutoCancel(true)
+                        //通知をタップしたときに開くアクティビティー
+                        .setContentIntent(pendingIntent)
+                        .setWhen(System.currentTimeMillis())
+                        .setStyle(bigTextStyle)
+                        .build();
+                notificationManager.notify(notificationId, bigTextStyle.build());
+            }
+        }
+        else{
+            NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
+                    .setSmallIcon(R.mipmap.ic_launcher)
                     .setContentTitle(requisiteList)
                     .setContentText(storeList)
-                    // アイコン設定
-                    .setSmallIcon(R.drawable.ic_stat_name)
-                    .setLargeIcon(icon)
                     .setAutoCancel(true)
-                    //通知をタップしたときに開くアクティビティー
-                    .setContentIntent(pendingIntent)
-                    .setWhen(System.currentTimeMillis())
-                    .setStyle(bigTextStyle)
-                    .build();
-            notificationManager.notify(notificationId, bigTextStyle.build());
+                    .setContentIntent(pendingIntent);
+            notificationBuilder.build();
         }
     }
 

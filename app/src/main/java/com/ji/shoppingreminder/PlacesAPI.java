@@ -144,7 +144,7 @@ public class PlacesAPI{
                 })
                 .addOnFailureListener(
                         (exception) -> {
-                            Log.d("test", exception.getLocalizedMessage());
+                            Log.d("test", exception.toString());
                             exception.printStackTrace();
                         });
     }
