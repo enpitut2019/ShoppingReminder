@@ -8,7 +8,6 @@ public class CategoryLists {
     public List<String> foodStore = new ArrayList<String>(){
         {
             add("SUPERMARKET");
-            add("RESTAURANT");
         }
     };
 
