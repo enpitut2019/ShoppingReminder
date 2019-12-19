@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.AppLaunchChecker;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -41,6 +42,7 @@ import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 import com.ji.shoppingreminder.ui.main.PlaceholderFragment;
 import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
 import com.ji.shoppingreminder.ui.main.ViewAdapter;
+import com.stephentuso.welcome.WelcomeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private ConstraintLayout registerLayout;
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
+    private WelcomeHelper welcomeScreen;
 
     private Switch backgroundSwitch;
 
@@ -98,6 +101,17 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
+
+        //初回起動かどうかの確認
+        if(AppLaunchChecker.hasStartedFromLauncher(this)){
+        } else {
+            //TutorialActivityを表示する
+            welcomeScreen = new WelcomeHelper(this, TutorialActivity.class);
+            welcomeScreen.show(savedInstanceState);
+        }
+        //起動したことを保存
+        AppLaunchChecker.onActivityCreate(this);
+
         //Serviceが起動中か確認
         if(isLocationServiceRunning()){
             backgroundSwitch.setChecked(true);
@@ -529,6 +543,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         ContentValues values = new ContentValues();
         values.put("notification", state);
         db.update("requisitedb", values, "name = ?", new String[]{item});
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        welcomeScreen.onSaveInstanceState(outState);
     }
 
     @Override
