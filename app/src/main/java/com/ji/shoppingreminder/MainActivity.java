@@ -227,12 +227,18 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                         toastMake("文字が長すぎます", 0, 200);
                     }
                     else{
-                        //editText内の文字をdatabaseに登録する
-                        insertToDB(currentPage, item);
-                        //recyclerViewの更新
-                        Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
-                        ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
-                        ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+                        //文字列中にカンマを含まない
+                        if(item.indexOf(",") == -1){
+                            //editText内の文字をdatabaseに登録する
+                            insertToDB(currentPage, item);
+                            //recyclerViewの更新
+                            Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                            ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
+                            ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+                        }
+                        else{
+                            toastMake("「,」が含まれる文字列は\n入力できません", 0, 200);
+                        }
                     }
                 }
             }
