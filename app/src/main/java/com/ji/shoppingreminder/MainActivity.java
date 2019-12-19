@@ -387,6 +387,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             } else {
                 toastMake(item + "は既に追加されています", 0, 200);
             }
+            cursor.close();
         }
     }
 
