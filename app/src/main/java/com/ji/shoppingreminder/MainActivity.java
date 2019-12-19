@@ -222,12 +222,18 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 String item = editText.getText().toString().trim();
                 editText.getEditableText().clear();
                 if (item.length() != 0) {
-                    //editText内の文字をdatabaseに登録する
-                    insertToDB(currentPage, item);
-                    //recyclerViewの更新
-                    Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
-                    ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
-                    ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+                    //26文字以上は表示できない
+                    if(item.length() > 26){
+                        toastMake("文字が長すぎます", 0, 200);
+                    }
+                    else{
+                        //editText内の文字をdatabaseに登録する
+                        insertToDB(currentPage, item);
+                        //recyclerViewの更新
+                        Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                        ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
+                        ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+                    }
                 }
             }
         });
