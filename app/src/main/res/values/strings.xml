@@ -10,10 +10,12 @@
         <item>食料品</item>
         <item>日用品</item>
         <item>衣料品</item>
+        <item>その他</item>
     </string-array>
 
     <string name="tab_text_1">食料品</string>
     <string name="tab_text_2">日用品</string>
     <string name="tab_text_3">衣料品</string>
+    <string name="tab_text_4">その他</string>
     <string name="textDefault">商品名を入力してください</string>
 </resources>
