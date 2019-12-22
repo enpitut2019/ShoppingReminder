@@ -102,11 +102,11 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
 
+        welcomeScreen = new WelcomeHelper(this, TutorialActivity.class);
         //初回起動かどうかの確認
         if(AppLaunchChecker.hasStartedFromLauncher(this)){
         } else {
             //TutorialActivityを表示する
-            welcomeScreen = new WelcomeHelper(this, TutorialActivity.class);
             welcomeScreen.show(savedInstanceState);
         }
         //起動したことを保存
