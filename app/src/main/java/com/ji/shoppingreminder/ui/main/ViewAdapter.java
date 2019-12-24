@@ -64,6 +64,8 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
             public boolean onLongClick(View view) {
                 if(!deleteMode){
                     changeBooleanMode();
+                    listViewManager.chooseDeleteItem(item);
+                    view.setBackgroundColor(Color.GRAY);
                     return true;
                 }
                 return false;
