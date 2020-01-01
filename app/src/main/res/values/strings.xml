@@ -13,9 +13,15 @@
         <item>その他</item>
     </string-array>
 
-    <string name="tab_text_1">食料品</string>
-    <string name="tab_text_2">日用品</string>
-    <string name="tab_text_3">衣料品</string>
-    <string name="tab_text_4">その他</string>
-    <string name="textDefault">商品名を入力してください</string>
+    <string name="tab_text_1">Groceries</string>
+    <string name="tab_text_2">Daily Necessaries</string>
+    <string name="tab_text_3">Clothing</string>
+    <string name="tab_text_4">Others</string>
+    <string name="textDefault">Enter what you want to buy</string>
+    <string name="tutorial_title_1">About \"CanBuy!\"</string>
+    <string name="tutorial_description_1">\"CanBuy!\" Is a reminder to prevent forgetting to shop!</string>
+    <string name="tutorial_title_2">How to prevent forgetting to shop?</string>
+    <string name="tutorial_description_2">\"CanBuy!\" Will notify you when you are nearing a store where you can take notes. To use this function, turn on the \"GPS\" switch on the upper left.</string>
+    <string name="tutorial_title_3">About \"How to write notes\" and \"Categories\"</string>
+    <string name="tutorial_description_3">First swipe to the tab that matches the category of what you want to buy. For example, if you want to buy \"potatoes\", swipe to the \"groceries\" tab. After swiping, write down what you want to buy! Now \"CanBuy!\" Will be able to notify you when a suitable store is approaching.</string>
 </resources>

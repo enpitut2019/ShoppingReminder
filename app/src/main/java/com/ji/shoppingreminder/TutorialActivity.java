@@ -1,9 +1,6 @@
 package com.ji.shoppingreminder;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
-import android.util.Log;
 
 import com.stephentuso.welcome.BasicPage;
 import com.stephentuso.welcome.TitlePage;
@@ -21,16 +18,17 @@ public class TutorialActivity extends WelcomeActivity {
     protected WelcomeConfiguration configuration() {
         return new WelcomeConfiguration.Builder(this)
                 .defaultBackgroundColor(R.color.colorPrimary)
-                .page(new TitlePage(R.drawable.text_button,
-                        "Title")
+                .page(new BasicPage(R.drawable.ic_check_box_white_24dp,
+                        getString(R.string.tutorial_title_1),
+                        getString(R.string.tutorial_description_1))
                 )
-                .page(new BasicPage(R.drawable.text_button,
-                        "Header",
-                        "More text.")
+                .page(new BasicPage(R.drawable.ic_toggle_on_white_24dp,
+                        getString(R.string.tutorial_title_2),
+                        getString(R.string.tutorial_description_2))
                 )
-                .page(new BasicPage(R.drawable.text_button,
-                        "Lorem ipsum",
-                        "dolor sit amet.")
+                .page(new BasicPage(R.drawable.ic_view_carousel_white_24dp,
+                        getString(R.string.tutorial_title_3),
+                        getString(R.string.tutorial_description_3))
                 )
                 .swipeToDismiss(true)
                 .build();

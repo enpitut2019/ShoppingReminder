@@ -109,6 +109,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             //TutorialActivityを表示する
             welcomeScreen.show(savedInstanceState);
         }
+
+        //Debug時はTutorialを常に表示する
+        if(BuildConfig.DEBUG){
+            welcomeScreen.forceShow();
+        }
+
         //起動したことを保存
         AppLaunchChecker.onActivityCreate(this);
 
