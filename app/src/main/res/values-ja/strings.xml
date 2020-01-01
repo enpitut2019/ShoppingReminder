@@ -5,17 +5,19 @@
     <string name="tab_text_2">日用品</string>
     <string name="tab_text_3">衣料品</string>
     <string name="tab_text_4">その他</string>
-    <string name="textDefault">商品名を入力してください</string>
+    <string name="textDefault">商品名を入力してください...</string>
     <string name="tutorial_description_1">「CanBuy!」はお買い物忘れを防ぐリマインダーです！</string>
-    <string name="tutorial_description_2">
-        「CanBuy!」はあなたがメモしたものが実際に買えるお店に近づくと通知をしてくれます。\n
-        この機能を使うためには左上の「GPS」スイッチをオンにしてください。</string>
-    <string name="tutorial_description_3">
-        まずあなたが買いたいもののカテゴリと一致するタブにスワイプで移動してください。\n
-        例えば「じゃがいも」を買いたいときは「食料品」のタブにスワイプで移動します。\n
-        スワイプしたら買いたいものをメモしてください！\n
-        これで「CanBuy!」は適切なお店が近づくと通知ができるようになります。</string>
+    <string name="tutorial_description_2">「CanBuy!」はあなたがメモしたものが実際に買えるお店に近づくと通知をしてくれます。\nこの機能を使うためには左上の「GPS」スイッチをオンにしてください。</string>
+    <string name="tutorial_description_3">まずあなたが買いたいもののカテゴリと一致するタブにスワイプで移動してください。\n例えば「じゃがいも」を買いたいときは「食料品」のタブにスワイプで移動します。\nスワイプしたら買いたいものをメモしてください！\nこれで「CanBuy!」は適切なお店が近づくと通知ができるようになります。</string>
     <string name="tutorial_title_1">「CanBuy!」について</string>
     <string name="tutorial_title_2">どうやって買い物忘れを防ぐの？</string>
     <string name="tutorial_title_3">「メモの書き方」と「カテゴリ」について</string>
+    <string name="gps_working">GPSが作動しています</string>
+    <string name="error_too_long">文字が長すぎます！</string>
+    <string name="error_having_comma">「,」が含まれる文字列は入力できません</string>
+    <string name="error_gps_permission">位置情報を許可しないと施設の情報を取得できません!</string>
+    <string name="caution_already_added">は既に追加されています</string>
+    <string name="was_bought">を購入しました</string>
+    <string name="selected_count">件選択中</string>
+    <string name="store_found">店舗が見つかりました！</string>
 </resources>

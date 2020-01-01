@@ -230,7 +230,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 if (item.length() != 0) {
                     //26文字以上は表示できない
                     if(item.length() > 26){
-                        toastMake("文字が長すぎます", 0, 200);
+                        toastMake(getString(R.string.error_too_long), 0, 200);
                     }
                     else{
                         //文字列中にカンマを含まない
@@ -243,7 +243,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                             ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
                         }
                         else{
-                            toastMake("「,」が含まれる文字列は\n入力できません", 0, 200);
+                            toastMake(getString(R.string.error_having_comma), 0, 200);
                         }
                     }
                 }
@@ -311,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             } else {
                 // それでも拒否された時の対応
-                toastMake("位置情報を許可しないと施設の情報を取得できません", 0, 200);
+                toastMake(getString(R.string.error_gps_permission), 0, 200);
             }
         }
     }
@@ -403,7 +403,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             if (cursor.getInt(0) == 0) {
                 changeItemState(item, 1);
             } else {
-                toastMake(item + "は既に追加されています", 0, 200);
+                toastMake(item + getString(R.string.caution_already_added), 0, 200);
             }
             cursor.close();
         }
@@ -469,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if(notification == 1){
             changeItemState(item, 0);
             //トーストを表示
-            toastMake(item + "を購入しました", 0, 200);
+            toastMake(item + getString(R.string.was_bought), 0, 200);
             return false;
         }
         //通知できるように変更
@@ -503,14 +503,14 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             db.update("requisitedb", values, "name = ? AND category = ?",
                     new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
             deleteCount--;
-            deleteCountText.setText(deleteCount + "件選択中");
+            deleteCountText.setText(deleteCount + getString(R.string.selected_count));
             return false;
         }else{
             values.put("deleteid", 1);
             db.update("requisitedb", values, "name = ? AND category = ?",
                     new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
             deleteCount++;
-            deleteCountText.setText(deleteCount + "件選択中");
+            deleteCountText.setText(deleteCount + getString(R.string.selected_count));
             return true;
         }
     }
@@ -540,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
             registerLayout.setVisibility(View.GONE);
             deleteCount = 0;
-            deleteCountText.setText(deleteCount + "件選択中");
+            deleteCountText.setText(deleteCount + getString(R.string.selected_count));
             toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
         }
         else{
