@@ -95,7 +95,7 @@ public class LocationService extends Service implements LocationListener{
             if(notificationManager != null) {
                 notificationManager.createNotificationChannel(channel);
                 Notification notification = new Notification.Builder(context, channelId)
-                        .setContentTitle("GPS作動中です")
+                        .setContentTitle(getString(R.string.gps_working))
                         // アイコン設定
                         .setSmallIcon(R.drawable.ic_stat_name)
                         .setAutoCancel(true)
@@ -111,7 +111,7 @@ public class LocationService extends Service implements LocationListener{
         else{
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
                     .setSmallIcon(R.mipmap.ic_launcher)
-                    .setContentTitle("GPS作動中です")
+                    .setContentTitle(getString(R.string.gps_working))
                     .setContentText("")
                     .setAutoCancel(true)
                     .setContentIntent(pendingIntent);
