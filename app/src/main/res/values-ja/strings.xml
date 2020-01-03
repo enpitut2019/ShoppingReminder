@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string-array name="category">
+        <item>食料品</item>
+        <item>日用品</item>
+        <item>衣料品</item>
+        <item>その他</item>
+    </string-array>
+
     <string name="app_name">CanBuy!</string>
     <string name="tab_text_1">食料品</string>
     <string name="tab_text_2">日用品</string>
