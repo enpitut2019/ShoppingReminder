@@ -1,14 +1,23 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        release {
+            storeFile file('C:\\Users\\tyani\\OneDrive\\Documents\\enPiT2019\\ReleaseKey.jks')
+            storePassword 'cdLnA8qtEpaY'
+            keyPassword 'cdLnA8qtEpaY'
+            keyAlias = 'keyForRelease'
+        }
+    }
     compileSdkVersion 29
     defaultConfig {
         applicationId "com.ji.shoppingreminder"
         minSdkVersion 23
         targetSdkVersion 29
-        versionCode 6
-        versionName "0.10.1"
+        versionCode 7
+        versionName "0.11"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        signingConfig signingConfigs.release
     }
     buildTypes {
         release {
