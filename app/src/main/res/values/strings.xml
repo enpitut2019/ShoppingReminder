@@ -7,10 +7,10 @@
     <string name="places_api_key">AIzaSyCu6MTCIQKPkkrwziJooVwSkgUoC-MNIM0</string>
 
     <string-array name="category">
-        <item>食料品</item>
-        <item>日用品</item>
-        <item>衣料品</item>
-        <item>その他</item>
+        <item>Groceries</item>
+        <item>Daily Necessaries</item>
+        <item>Clothing</item>
+        <item>Others</item>
     </string-array>
 
     <string name="tab_text_1">Groceries</string>
