@@ -137,7 +137,7 @@ public class PlacesAPI{
                     for (int i = 0; i < requisiteList.size(); i++){
                         if (requisiteList.get(i) != "" && storeList.get(i).length() != 0){
                             //storeList.get(i)の先頭に文字列を追加
-                            storeList.get(i).insert(0,"店舗が見つかりました\n\n");
+                            storeList.get(i).insert(0,serviceContext.getString(R.string.store_found) + "\n\n");
                             locationService.sendNotification(context, category[i] + " : " + requisiteList.get(i), storeList.get(i).toString(), 10 * (i + 1));
                         }
                     }

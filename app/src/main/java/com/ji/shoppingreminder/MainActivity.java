@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
+import androidx.core.app.AppLaunchChecker;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.viewpager.widget.ViewPager;
@@ -41,6 +42,7 @@ import com.ji.shoppingreminder.database.RequisiteDataBaseBuilder;
 import com.ji.shoppingreminder.ui.main.PlaceholderFragment;
 import com.ji.shoppingreminder.ui.main.SectionsPagerAdapter;
 import com.ji.shoppingreminder.ui.main.ViewAdapter;
+import com.stephentuso.welcome.WelcomeHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +59,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
     private ConstraintLayout registerLayout;
     private RequisiteDataBaseBuilder requisiteDBBuilder;
     private SQLiteDatabase db;
+    private WelcomeHelper welcomeScreen;
 
     private Switch backgroundSwitch;
 
@@ -98,6 +101,23 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
         backgroundSwitch = findViewById(R.id.background_switch);
         backgroundSwitch.setOnCheckedChangeListener(this);
+
+        welcomeScreen = new WelcomeHelper(this, TutorialActivity.class);
+        //初回起動かどうかの確認
+        if(AppLaunchChecker.hasStartedFromLauncher(this)){
+        } else {
+            //TutorialActivityを表示する
+            welcomeScreen.show(savedInstanceState);
+        }
+
+        //Debug時はTutorialを常に表示する
+        if(BuildConfig.DEBUG){
+            welcomeScreen.forceShow();
+        }
+
+        //起動したことを保存
+        AppLaunchChecker.onActivityCreate(this);
+
         //Serviceが起動中か確認
         if(isLocationServiceRunning()){
             backgroundSwitch.setChecked(true);
@@ -208,12 +228,24 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 String item = editText.getText().toString().trim();
                 editText.getEditableText().clear();
                 if (item.length() != 0) {
-                    //editText内の文字をdatabaseに登録する
-                    insertToDB(currentPage, item);
-                    //recyclerViewの更新
-                    Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
-                    ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
-                    ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+                    //26文字以上は表示できない
+                    if(item.length() > 26){
+                        toastMake(getString(R.string.error_too_long), 0, 200);
+                    }
+                    else{
+                        //文字列中にカンマを含まない
+                        if(item.indexOf(",") == -1){
+                            //editText内の文字をdatabaseに登録する
+                            insertToDB(currentPage, item);
+                            //recyclerViewの更新
+                            Fragment fragment = sectionsPagerAdapter.getCachedFragmentAt(currentPage);
+                            ((PlaceholderFragment)fragment).setList(getDBContents(currentPage));
+                            ((PlaceholderFragment)fragment).viewAdapter.notifyDataSetChanged();
+                        }
+                        else{
+                            toastMake(getString(R.string.error_having_comma), 0, 200);
+                        }
+                    }
                 }
             }
         });
@@ -279,7 +311,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             } else {
                 // それでも拒否された時の対応
-                toastMake("位置情報を許可しないと施設の情報を取得できません", 0, 200);
+                toastMake(getString(R.string.error_gps_permission), 0, 200);
             }
         }
     }
@@ -371,8 +403,9 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             if (cursor.getInt(0) == 0) {
                 changeItemState(item, 1);
             } else {
-                toastMake(item + "は既に追加されています", 0, 200);
+                toastMake(item + getString(R.string.caution_already_added), 0, 200);
             }
+            cursor.close();
         }
     }
 
@@ -436,7 +469,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         if(notification == 1){
             changeItemState(item, 0);
             //トーストを表示
-            toastMake(item + "を購入しました", 0, 200);
+            toastMake(item + getString(R.string.was_bought), 0, 200);
             return false;
         }
         //通知できるように変更
@@ -470,14 +503,14 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
             db.update("requisitedb", values, "name = ? AND category = ?",
                     new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
             deleteCount--;
-            deleteCountText.setText(deleteCount + "件選択中");
+            deleteCountText.setText(deleteCount + getString(R.string.selected_count));
             return false;
         }else{
             values.put("deleteid", 1);
             db.update("requisitedb", values, "name = ? AND category = ?",
                     new String[]{item, sectionsPagerAdapter.getPageTitle(currentPage).toString()});
             deleteCount++;
-            deleteCountText.setText(deleteCount + "件選択中");
+            deleteCountText.setText(deleteCount + getString(R.string.selected_count));
             return true;
         }
     }
@@ -507,7 +540,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
 
             registerLayout.setVisibility(View.GONE);
             deleteCount = 0;
-            deleteCountText.setText(deleteCount + "件選択中");
+            deleteCountText.setText(deleteCount + getString(R.string.selected_count));
             toolbar.setBackgroundColor(getResources().getColor(R.color.colorPrimaryDark));
         }
         else{
@@ -529,6 +562,12 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
         ContentValues values = new ContentValues();
         values.put("notification", state);
         db.update("requisitedb", values, "name = ?", new String[]{item});
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        welcomeScreen.onSaveInstanceState(outState);
     }
 
     @Override
