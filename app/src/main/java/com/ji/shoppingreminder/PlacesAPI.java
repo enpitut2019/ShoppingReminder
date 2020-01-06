@@ -30,11 +30,12 @@ public class PlacesAPI{
     private Context serviceContext;
     public Context activetyContext;
     private String gApiKey;
-    private String[] category = {"食料品", "日用品", "衣料品"};
+    private String[] category;
 
     public PlacesAPI(Context serviceContext, String gApiKey){
         this.serviceContext = serviceContext;
         this.gApiKey = gApiKey;
+        category = serviceContext.getResources().getStringArray(R.array.category);
     }
 
     /**
