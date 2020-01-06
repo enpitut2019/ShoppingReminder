@@ -13,6 +13,12 @@
         <item>Others</item>
     </string-array>
 
+    <string-array name="database_category">
+        <item>Groceries</item>
+        <item>Daily Necessaries</item>
+        <item>Clothing</item>
+    </string-array>
+
     <string name="tab_text_1">Groceries</string>
     <string name="tab_text_2">Daily Necessaries</string>
     <string name="tab_text_3">Clothing</string>

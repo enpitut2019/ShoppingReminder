@@ -35,7 +35,8 @@ public class PlacesAPI{
     public PlacesAPI(Context serviceContext, String gApiKey){
         this.serviceContext = serviceContext;
         this.gApiKey = gApiKey;
-        category = serviceContext.getResources().getStringArray(R.array.category);
+        category = serviceContext.getResources().getStringArray(R.array.database_category)
+        ;
     }
 
     /**
