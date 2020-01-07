@@ -2,6 +2,7 @@ package com.ji.shoppingreminder;
 
 import androidx.core.app.ActivityCompat;
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.NotificationManagerCompat;
 
 import android.Manifest;
 import android.app.Notification;
@@ -254,8 +255,13 @@ public class LocationService extends Service implements LocationListener{
                     .setContentTitle(requisiteList)
                     .setContentText(storeList)
                     .setAutoCancel(true)
+                    .setStyle(new NotificationCompat.BigTextStyle()
+                        .bigText(storeList)
+                        )
                     .setContentIntent(pendingIntent);
-            notificationBuilder.build();
+
+            NotificationManagerCompat notificationManagerCompat = NotificationManagerCompat.from(context);
+            notificationManagerCompat.notify(notificationId, notificationBuilder.build());
         }
     }
 

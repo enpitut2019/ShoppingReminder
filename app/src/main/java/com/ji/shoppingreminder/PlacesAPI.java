@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
+import android.os.Debug;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
@@ -57,7 +58,9 @@ public class PlacesAPI{
      */
     public  void GetLocationInfo(Context context){
         if (!Places.isInitialized()) {
+            Log.d("debug", "Places is not initialized.");
             Places.initialize(serviceContext, serviceContext.getString(R.string.places_api_key));
+            Log.d("debug", "Places is initialized now.");
         }
 
         placesClient = Places.createClient(serviceContext);
