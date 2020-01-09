@@ -32,6 +32,7 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
 
     public ViewAdapter(List<String> data,List<Integer> notificationList, ListViewManager listviewManager) {
         items = data;
+        setHasStableIds(true);
         this.notificationList = notificationList;
         this.listViewManager = listviewManager;
     }
@@ -114,5 +115,10 @@ public class ViewAdapter extends RecyclerView.Adapter<ViewAdapter.ViewHolder>  {
     public void changeBooleanMode(){
         deleteMode = !deleteMode;
         listViewManager.changeMode(deleteMode);
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return items.get(position).hashCode();
     }
 }
