@@ -15,6 +15,9 @@ CanBuy!はそんなあなたにメモをしたものが**実際に買える場�
 ## 実装したもの
 [Kanban](https://github.com/enpitut2019/ShoppingReminder/projects/1)
 
+## デプロイ先
+[GooglePlayStore：CanBuy! - 買い物忘れを防ぐリマインダー](https://play.google.com/store/apps/details?id=com.ji.shoppingreminder)
+
 ## エレベーターピッチ
 
 **メモしたことを忘れて買い忘れをしてしまうのを解決**したい
