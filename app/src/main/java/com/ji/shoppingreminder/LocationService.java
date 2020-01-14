@@ -14,6 +14,7 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.Icon;
 import android.icu.text.SimpleDateFormat;
@@ -111,7 +112,7 @@ public class LocationService extends Service implements LocationListener{
         //API26以前
         else{
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_stat_name)
                     .setContentTitle(getString(R.string.gps_working))
                     .setContentText("")
                     .setAutoCancel(true)
@@ -198,18 +199,19 @@ public class LocationService extends Service implements LocationListener{
      * PUSH通知を送信する
      */
     public static void sendNotification(Context context, String requisiteList, String storeList, int index){
-        Icon icon = null;
+        int iconID;
         switch (index){
             case 10:
-                icon = Icon.createWithResource(context, R.drawable.ic_stat_food);
+                iconID = R.drawable.ic_stat_food;
                 break;
             case 20:
-                icon = Icon.createWithResource(context, R.drawable.ic_stat_grocery);
+                iconID = R.drawable.ic_stat_grocery;
                 break;
             case 30:
-                icon = Icon.createWithResource(context, R.drawable.ic_stat_clothing);
+                iconID = R.drawable.ic_stat_clothing;
                 break;
             default:
+                iconID = -1;
                 break;
         }
 
@@ -239,7 +241,7 @@ public class LocationService extends Service implements LocationListener{
                         .setContentText(storeList)
                         // アイコン設定
                         .setSmallIcon(R.drawable.ic_stat_name)
-                        .setLargeIcon(icon)
+                        .setLargeIcon(Icon.createWithResource(context, iconID))
                         .setAutoCancel(true)
                         //通知をタップしたときに開くアクティビティー
                         .setContentIntent(pendingIntent)
@@ -250,8 +252,11 @@ public class LocationService extends Service implements LocationListener{
             }
         }
         else{
+
+
             NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context)
-                    .setSmallIcon(R.mipmap.ic_launcher)
+                    .setSmallIcon(R.drawable.ic_stat_name)
+                    .setLargeIcon(BitmapFactory.decodeResource(context.getResources(),iconID))
                     .setContentTitle(requisiteList)
                     .setContentText(storeList)
                     .setAutoCancel(true)
