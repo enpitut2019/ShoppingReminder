@@ -8,11 +8,13 @@ public class CategoryLists {
     public List<String> foodStore = new ArrayList<String>(){
         {
             add("SUPERMARKET");
+            add("SHOPPING_MALL");
         }
     };
 
     public List<String> groceryStore = new ArrayList<String>(){
         {
+            add("CONVENIENCE_STORE");
             add("GROCERY_OR_SUPERMARKET ");
             add("SUPERMARKET");
             add("PHARMACY");
@@ -24,6 +26,7 @@ public class CategoryLists {
             add("CLOTHING_STORE");
             add("SHOPPING_MALL");
             add("SHOE_STORE");
+            add("DEPARTMENT_STORE");
         }
     };
 }
